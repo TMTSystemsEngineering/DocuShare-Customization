@@ -1,0 +1,32 @@
+# Properties file for TMT Caltech Application
+# Docushare Document Management System applications.
+#
+
+##
+## Docushare properties
+##
+tmt.dshost=localhost
+tmt.dsport=1099
+tmt.dsdomain=DocuShare
+tmt.dsuser=admin
+tmt.dspassword=!Hubble30
+
+##
+## Database Properties
+##
+tmt.db.username=docushare_admin
+tmt.db.password=8LoZ8x6z6N
+tmt.db.url=jdbc\:postgresql\://tmt-docushare-test.c3n8ztdqalj0.us-west-1.rds.amazonaws.com\:5432/docushare
+
+##Note: do not update this property if you have a postgres database.
+tmt.db.drivername=org.postgresql.Driver
+
+tmt.db.provider=postgresql
+tmt.db.database=docushare
+
+# logfiles for tmt utility.
+tmt.logfilepath=/data/DocuShare/logs/tmt.log
+
+# logging level
+# 1=DEBUG, 2=INFO, 3=ERROR, 4=SEVERE
+tmt.loglevel=1
