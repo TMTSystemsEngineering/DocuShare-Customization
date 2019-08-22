@@ -1,0 +1,1452 @@
+<?xml version="1.0" ?>
+<!DOCTYPE  viewdef [
+<!ENTITY nbsp   "&#160;"> <!-- no-break space = non-breaking space U+00A0 ISOnum -->
+<!ENTITY copy   "&#169;"> <!-- copyright sign, U+00A9 ISOnum -->
+]>
+
+
+<!-- Copyright (c) 1996-2008 Xerox Corporation.  All Rights Reserved.
+Copyright protection claimed includes all forms and matters of copyrightable material 
+and information now allowed by statutory or judicial law or herein after granted. -->
+
+<viewdef
+    messages="EditPropertiesMessages.vdf">
+
+  <!-- assumes is_admin and full_subcription_service is licensed -->
+  <define id="showAction">
+    <tr>
+      <td align="right">
+        <insert ref="request:object:notification_action:href_label"/>
+        <if cond="${request:object:notification_action:is_required}">
+          <br/><small><insert ref="viewdef:EditPropertiesMessages:required" /></small>
+        </if>
+      </td>
+      <td align="left">
+        <select name="${request:object:notification_action:name}" size="1" tabindex="1">
+          <iter ref="request:object:notification_action:menu_items">
+            <if cond="${:name} == 'workflow'">
+              <elif cond="${:name} == 'script'">
+                <if cond="$:selected=='true'">
+                    <option value="${:name}" selected="selected"><insert ref=":label"/></option>
+                  <else>
+                    <option value="${:name}"><insert ref=":label"/></option>
+                  </else>
+                </if>
+              </elif>
+              <else>
+                 <if cond="$:selected=='true'">
+                    <option value="${:name}" selected="selected"><insert ref=":label"/></option>
+                    <else>
+                      <option value="${:name}"><insert ref=":label"/></option>
+                    </else>
+                 </if>
+              </else>
+            </if>
+          </iter>
+        </select>
+      </td>
+    </tr>
+  </define>
+
+  <define id="Generic">
+
+    <tr>
+      <td>
+        <!-- DO NOT TRANSLATE the following section -->
+        <insert ref="request:html:begin_form(action='ApplyProps',name='ApplyProps',validate='on',required='all',exclude_props='create_date+modified_date+readyForDeclare',classname='${request:object:classname}',handle='${request:object:handle}')"/>
+        <!-- END Do Not Translate section -->
+        <input name="vdf_results" type="hidden" value="ServicesLib/$request:get_cmd_arg(argname='handle')/Properties"/>
+        <table class="propstable fieldset">
+          <if cond="${request:object:display_sequence_enabled}">
+
+            <iter ref="request:object:display_sequence(exclude_props='create_date+modified_date+readyForDeclare', edit_record='true')" item="obj">
+              
+              <if cond="${request:object:is_prop(offset='$:_sequence')}">
+                
+                <with ref="request:object:get_prop(name='$obj')">
+                  <if cond="$:is_read_only=='false'">
+                    <insert ref=":html_edit_value(formName='ApplyProps')"/>
+                  </if>
+                </with>
+                
+              </if>
+              
+            </iter>
+
+            <if cond="${request:directory:is_admin(content_admin='true')}">
+                  <insert ref="request:object:displayIsRootObject(operation='edit')" />
+            </if>
+
+            <else>
+
+              <with ref="request:object">
+                <if cond="$:canEditProp(name='title') == 'true'">
+                  <insert ref=":title:html_edit_value"/>
+                </if>
+                <if cond="$:canEditProp(name='summary') == 'true'">
+                  <insert ref=":summary:html_edit_value"/>
+                </if>
+                <if cond="$:canEditProp(name='description') == 'true'">
+                  <insert ref=":description:html_edit_value(class='ckeditor')"/>
+                </if>
+                <if cond="$:canEditProp(name='keywords') == 'true'">
+                  <insert ref=":keywords:html_edit_value"/>
+                </if>
+                <if cond="$:canEditProp(name='expiration_date') == 'true'">
+                  <insert ref=":expiration_date:html_edit_value( formName='ApplyProps' )"/>     
+                </if>
+                <!-- We usually never get here unless someone has specifically asked to edit the XML internals as a string.
+                     Something to ask for just the XML fields would be nice, but this is just a for recovery and testing
+                     so it's not important.  Yet.-->
+                <if cond="$:has_prop(name='xmlFields') == 'true'">
+                  <insert ref=":xmlFields:html_edit_value( formName='ApplyProps' )"/>     
+                </if>
+                <if cond="$:has_prop(name='xmlTemplates') == 'true'">
+                  <insert ref=":xmlTemplates:html_edit_value( formName='ApplyProps' )"/>      
+                </if>
+              </with>
+              <iter ref="request:object:props(exclude_props='title+summary+description+keywords+create_date+modified_date+expiration_date+readyForDeclare+generated', edit_record='true')">
+                <if cond="$:is_read_only=='false'">
+                  <insert ref=":html_edit_value( formName='ApplyProps' )"/>
+                </if>
+              </iter>
+
+            </else>
+          </if>
+
+
+          <if cond="${request:directory:is_admin(content_admin='true')}">
+            <insert ref="request:object:displayIsRootObject(operation='edit')"/>      
+          </if>
+
+          <insert ref="local:submitButton"/>
+        </table>
+        <insert ref="request:html:end_form"/> 
+      </td>
+    </tr>
+
+  </define>
+
+  <define id="Group">
+    <tr>
+      <td>
+        <div class="summaryText" style="margin-bottom: 20px">
+          <define id="emailPageUrl"><insert ref="local:cgi"/>ServicesLib/<insert ref="request:object:handle" />/Email</define>
+          <insert ref="viewdef:EditPropertiesMessages:summaryText(emailPageUrl=${local:emailPageUrl})" />
+        </div>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <table class="propstable fieldset">
+          <tr>
+            <td align="left">
+              <!-- Only allow change owner on groups that are not system objects -->
+              <if cond="${request:object:checkPermissions(permissions='manage')}=='true' and ${request:isGroupSystemObject}=='0' and ${request:directory:has_registry_access}=='true'">
+                <form name="Properties" action="${local:cgi}ChangeGroupOwner/${request:object:handle}" method="post">
+                  <td><input type="submit" value="${viewdef:EditPropertiesMessages:changeOwner}" class="bs submit-simple"/></td>
+                </form>
+              </if>
+            </td>
+          </tr>
+          <insert ref="request:html:begin_form(action='ApplyProps',name='ApplyProps',validate='on',required='all',exclude_props='create_date+modified_date+expiration_date+domain',classname='${request:object:classname}',handle='${request:object:handle}')"/>
+          
+          <input name="vdf_results" type="hidden" value="ServicesLib/$request:get_cmd_arg(argname='handle')/Properties"/>
+
+          <if cond="${request:object:display_sequence_enabled}">
+
+            <iter ref="request:object:display_sequence(exclude_props='create_date+modified_date+domain+expiration_date+readyForDeclare+docCountQuota+contentSizeMBQuota')" item="obj">
+              
+              <if cond="${request:object:is_prop(offset='$:_sequence')}">
+                
+                <with ref="request:object:get_prop(name='$obj')">
+                  <if cond="$:name=='title' or $:name=='summary' or $:name=='description' or $:name=='keywords'">
+                    <if cond="${request:isLdapLicensed}">
+                      <if cond="$:is_read_only=='false' and $:is_external_read_only=='false'">
+                        <if cond="$:name=='emailAlias'">
+                          <if cond="${request:is_licensed( key='email_integration' )}">
+                            <insert ref=":html_edit_value" />
+                          </if>
+                          <elif cond="$:name=='replyToGroup'">
+                            <if cond="${request:is_licensed( key='email_integration' )}">
+                              <insert ref=":html_edit_value" />
+                            </if>
+                          </elif>
+                          <elif cond="$:name=='confirmEmailReceipt'">
+                            <if cond="${request:is_licensed( key='email_integration' )}">
+                              <insert ref=":html_edit_value" />
+                            </if>
+                          </elif>
+                          <elif cond="$:name=='spamControl'">
+                            <if cond="${request:is_licensed( key='email_integration' )}">
+                              <insert ref=":html_edit_value" />
+                            </if>
+                          </elif>
+                          <else>
+                            <insert ref=":html_edit_value" />
+                          </else>
+                        </if>
+                        <elif cond="$:is_read_only=='false' and $:is_external_read_only=='true' and not ${request:is_external_domain(domain='${request:object:domain}')}">
+                          <insert ref=":html_edit_value"/>
+                        </elif>
+                        <elif cond="$:name=='title'">
+                          <insert ref=":html_view_value"/>
+                        </elif>
+                      </if>
+                      <else> <!-- LDAP not licensed -->
+                        <if cond="$:is_read_only=='false'">
+                          <if cond="$:name=='emailAlias'">
+                            <if cond="${request:is_licensed( key='email_integration' )}">
+                              <insert ref=":html_edit_value" />
+                            </if>
+                            <elif cond="$:name=='replyToGroup'">
+                              <if cond="${request:is_licensed( key='email_integration' )}">
+                                <insert ref=":html_edit_value" />
+                              </if>
+                            </elif>
+                            <elif cond="$:name=='confirmEmailReceipt'">
+                              <if cond="${request:is_licensed( key='email_integration' )}">
+                                <insert ref=":html_edit_value" />
+                              </if>
+                            </elif>
+                            <elif cond="$:name=='spamControl'">
+                              <if cond="${request:is_licensed( key='email_integration' )}">
+                                <insert ref=":html_edit_value" />
+                              </if>
+                            </elif>
+                            <elif cond="$:name=='external_recipients'">
+                              <if cond="${request:is_licensed( key='email_integration' )}">
+                                <insert ref=":html_edit_value" />
+                              </if>
+                            </elif>
+                            <else>
+                              <insert ref=":html_edit_value" />
+                            </else>
+                          </if>
+                          <elif cond="$:name=='title'">
+                            <insert ref=":html_view_value"/>
+                          </elif>
+                        </if>
+                      </else>
+                    </if>
+                    
+                    <else>
+                      <if cond="$:is_read_only=='false'">
+                        <insert ref=":html_edit_value(formName='ApplyProps')"/>
+                      </if>
+                    </else>
+                  </if>
+                </with>
+                
+              </if>
+              
+            </iter>
+            
+            <else>
+
+              <with ref="request:object">
+                <if cond="${request:isLdapLicensed}">
+                  <if cond="$:title:is_read_only=='false' and $:title:is_external_read_only=='false'">
+                    <insert ref=":title:html_edit_value"/>
+                    <elif cond="$:title:is_read_only=='false' and $:title:is_external_read_only=='true' and not ${request:is_external_domain(domain='${:domain}')}">
+                      <insert ref=":title:html_edit_value"/>
+                    </elif>
+                    <else>
+                      <insert ref=":title:html_view_value"/>
+                    </else>
+                  </if>
+                  <if cond="$:summary:is_read_only=='false' and $:summary:is_external_read_only=='false'">
+                    <insert ref=":summary:html_edit_value"/>
+                    <elif cond="$:summary:is_read_only=='false' and $:summary:is_external_read_only=='true' and not ${request:is_external_domain(domain='${:domain}')}">
+                      <insert ref=":summary:html_edit_value"/>
+                    </elif>
+                  </if>
+                  <if cond="$:description:is_read_only=='false' and $:description:is_external_read_only=='false'">
+                    <insert ref=":description:html_edit_value(class='ckeditor')"/>
+                    <elif cond="$:description:is_read_only=='false' and $:description:is_external_read_only=='true' and not ${request:is_external_domain(domain='${:domain}')}">
+                      <insert ref=":description:html_edit_value(class='ckeditor')"/>
+                    </elif>
+                  </if>
+                  <if cond="$:keywords:is_read_only=='false' and $:keywords:is_external_read_only=='false'">
+                    <insert ref=":keywords:html_edit_value"/>
+                    <elif cond="$:keywords:is_read_only=='false' and $:keywords:is_external_read_only=='true' and not ${request:is_external_domain(domain='${:domain}')}">
+                      <insert ref=":keywords:html_edit_value"/>
+                    </elif>
+                  </if>       
+                  <!--<insert ref="viewdef:dslib:edit_domain(prop=$:domain)"/>-->
+                  <iter ref=":props(exclude_props='domain+title+summary+description+keywords+create_date+modified_date+expiration_date+replyToGroup+emailAlias+confirmEmailReceipt+readyForDeclare+spamControl+external_recipients+docCountQuota+contentSizeMBQuota')">
+                    <if cond="$:is_read_only=='false' and $:is_external_read_only=='false'">
+                      <insert ref=":html_edit_value( formName='ApplyProps')"/>
+                    </if>
+                  </iter>
+                  <else> <!-- LDAP not licensed -->
+                    <if cond="$:title:is_read_only=='false'">
+                      <insert ref=":title:html_edit_value"/>
+                      <else>
+                        <insert ref=":title:html_view_value"/>
+                      </else>
+                    </if>
+                    <if cond="$:summary:is_read_only=='false'">
+                      <insert ref=":summary:html_edit_value"/>
+                    </if>
+                    <if cond="$:description:is_read_only=='false'">
+                      <insert ref=":description:html_edit_value(class='ckeditor')"/>
+                    </if>
+                    <if cond="$:keywords:is_read_only=='false'">
+                      <insert ref=":keywords:html_edit_value"/>
+                    </if>
+                    <iter ref=":props(exclude_props='domain+title+summary+description+keywords+create_date+modified_date+expiration_date+replyToGroup+emailAlias+confirmEmailReceipt+readyForDeclare+spamControl+external_recipients+docCountQuota+contentSizeMBQuota')">
+                      <if cond="$:is_read_only=='false'">
+                        <insert ref=":html_edit_value( formName='ApplyProps')"/>
+                      </if>
+                    </iter>
+                  </else>
+                </if>
+              </with>
+            </else>
+          </if>
+
+          <define id="manager"><if cond="$request:object:is_managable">1<else>0</else></if></define>
+          <if cond="not ${request:object:is_system_group} and ${local:manager}=='1' and not ${request:config:enable_multiple_group_managers}">
+            <!-- Do not display this for any admin group nor registered user group nor guest group -->
+            <insert ref="local:ChangeMembership"/>
+          </if>
+
+          <insert ref="local:submitButton"/>
+        </table>
+        
+        <insert ref="request:html:end_form"/>
+      </td>
+      
+    </tr>
+  </define>
+  
+
+  <define id="ChangeMembership">
+    <tr>
+      <td align="right">
+        <insert ref="viewdef:dslib:PropHelp(name='change_membership')"/>
+      </td>
+      <td>
+        <if cond="${request:object:getChangeMembership}=='owner'">
+          <input type="radio" name="changeMembership" value="owner" checked="checked" id="changeMembership_owner" /><label for="changeMembership_owner"><insert ref="viewdef:EditPropertiesMessages:owner" /></label>
+          <input type="radio" name="changeMembership" value="member" id="changeMembership_member" /><label for="changeMembership_member"><insert ref="viewdef:EditPropertiesMessages:members" /></label>
+          <input name="orig_changeMembership" type="hidden" value="owner"/>
+          <else>
+            <input type="radio" name="changeMembership" value="owner" id="changeMembership_owner" /><label for="changeMembership_owner"><insert ref="viewdef:EditPropertiesMessages:owner" /></label>
+            <input type="radio" name="changeMembership" value="member" checked="checked" id="changeMembership_member" /><label for="changeMembership_member"><insert ref="viewdef:EditPropertiesMessages:members" /></label>
+            <input name="orig_changeMembership" type="hidden" value="member"/>
+          </else>
+        </if>
+
+      </td>
+    </tr>
+  </define>
+  
+
+  <define id="Document">
+    <insert ref="request:html:begin_form(action='ApplyProps',name='ApplyProps',validate='on',required='all',exclude_props='create_date+modified_date+add_as_draft+isInteract+autoMovePreferredVersion',classname='${request:object:classname}',handle='${request:object:handle}')"/>
+    <input name="vdf_results" type="hidden" value="ServicesLib/$request:get_cmd_arg(argname='handle')/Properties"/>
+
+    <table class="propstable fieldset">
+      <col class="labels"></col>
+      <if cond="${request:object:display_sequence_enabled}">
+
+        <iter ref="request:object:display_sequence(exclude_props='document+create_date+modified_date+add_as_draft+readyForDeclare', edit_record='true')" item="obj">
+          
+          <if cond="${request:object:is_prop(offset='$:_sequence')}">
+            
+            <with ref="request:object:get_prop(name='$obj')" name="prop">
+              <if cond="${prop:name} == 'content_type'">
+                <tr><td align="right"><insert ref="prop:href_label"/></td><td><select name="${prop:name}" size="1"> 
+                <insert ref="request:set_request_var(varname='known_mime',varval=0)" /> 
+                <iter ref="request:config:mime_types" item="types">
+                  <if cond="${types:name} == ${prop:gets}">
+                    <insert ref="request:set_request_var(varname='known_mime',varval=1)" /> 
+                    <option value="${types:name}" selected="selected"><insert ref="viewdef:uilib:displayMimeTypeItem(label='$types:label',type='$types:name',extensions='$types:extensions')"/></option>
+                    <else>
+                      <option value="${types:name}"><insert ref="viewdef:uilib:displayMimeTypeItem(label='$types:label',type='$types:name',extensions='$types:extensions')"/></option>
+                    </else>
+                  </if>
+                </iter>
+                <if cond="${request:get_request_var(varname='known_mime')}=='0'">
+                  <option value="${prop:gets}" selected="selected"><insert ref="viewdef:uilib:displayMimeTypeItem(label='${prop:gets}',type='${prop:gets}',extensions='')"/></option>
+                </if>
+              </select>
+                </td></tr>
+                <elif cond="$prop:is_read_only=='false'">
+                  <if cond="${prop:name} == 'description'">
+                    <insert ref="request:object:description:html_edit_value(class='ckeditor')"/>
+		    <elif cond="${prop:name} == 'DCN'">
+                      <insert ref="prop:html_edit_value(formName='ApplyProps')"/>
+		      <input name="origDCN" type="hidden" value="${prop:gets}"></input>
+		      <script type="text/javascript">
+		      function DCNchange(){
+			  var fldDCN = document.getElementsByName("DCN")[0];
+			  var fldOrigDCN = document.getElementsByName("origDCN")[0];
+		          var arrOld = fldOrigDCN.value.split(".");
+			  var oldRoot = arrOld[0] + "." + arrOld[1] + "." + arrOld[2] + "." + arrOld[3] + "." + arrOld[4] + ".";
+			  var newRoot = fldDCN.value.substr(0, oldRoot.length);
+			  if (oldRoot != newRoot) {
+			      alert ("DCN value cannot be changed (except for last component)");
+			      fldDCN.value = fldOrigDCN.value;
+			  }
+		      };
+		      var fldDCN = document.getElementsByName("DCN")[0];
+		      fldDCN.onchange = DCNchange;
+		      </script>
+			<!--
+			<tr><td align='right' valign='top'><label><a class='fieldname labelHelpLink' title="Help" href="/docushare/dsweb/PropHelp/Document.DCN">Document Control Number:</a></label><br/><small>(required)</small></td>
+			<td><input name="DCN" type="text" size="60" required="required" maxlength="80" value="${prop:gets}" tabindex="1"></input>
+			</td>
+			</tr>-->
+		    </elif>
+                    <else>
+                      <insert ref="prop:html_edit_value(formName='ApplyProps')"/>
+                    </else>
+                  </if>
+                </elif>
+              </if>
+            </with>
+            
+          </if>
+          
+        </iter>
+
+        <if cond="${request:directory:is_admin(content_admin='true')}">
+              <insert ref="request:object:displayIsRootObject(operation='edit')"/>
+        </if>
+
+        <else>
+
+          <with ref="request:object">
+            <if cond="$:canEditProp(name='title') == 'true'">
+              <insert ref=":title:html_edit_value"/>
+            </if>
+            <if cond="$:canEditProp(name='summary') == 'true'">
+              <insert ref=":summary:html_edit_value"/>
+            </if>
+            <if cond="$:canEditProp(name='description') == 'true'">
+              <insert ref=":description:html_edit_value(class='ckeditor')"/>
+            </if>
+            <if cond="$:canEditProp(name='keywords') == 'true'">
+              <insert ref=":keywords:html_edit_value"/>
+            </if>
+            <if cond="$:canEditProp(name='expiration_date') == 'true'">
+              <insert ref=":expiration_date:html_edit_value( formName='ApplyProps' )"/>     
+            </if>
+          </with>
+          <iter ref="request:object:props(exclude_props='document+title+summary+description+keywords+create_date+modified_date+expiration_date+add_as_draft+readyForDeclare', edit_record='true')" item="obj">
+            <if cond="${:name} == 'content_type'">
+              <tr><td align="right"><insert ref=":href_label"/></td><td><select name="${:name}" size="1"> 
+              <insert ref="request:set_request_var(varname='known_mime',varval=0)" /> 
+              <iter ref="request:config:mime_types" item="types">
+                <if cond="${types:name} == ${obj:gets}">
+                  <insert ref="request:set_request_var(varname='known_mime',varval=1)" /> 
+                  <option value="${types:name}" selected="selected"><insert ref="viewdef:uilib:displayMimeTypeItem(label='$types:label',type='$types:name',extensions='$types:extensions')"/></option>
+                  <else>
+                    <option value="${types:name}"><insert ref="viewdef:uilib:displayMimeTypeItem(label='$types:label',type='$types:name',extensions='$types:extensions')"/></option>
+                  </else>
+                </if>
+              </iter>
+              <if cond="${request:get_request_var(varname='known_mime')}=='0'">
+                <option value="${obj:gets}" selected="selected"><insert ref="viewdef:uilib:displayMimeTypeItem(label='${obj:gets}',type='${obj:gets}',extensions='')"/></option>
+              </if>
+            </select>
+              </td></tr>
+              <elif cond="$:is_read_only=='false'">
+                <insert ref=":html_edit_value( formName='ApplyProps')"/>
+              </elif>
+            </if>
+          </iter>
+
+          <if cond="${request:directory:is_admin(content_admin='true')}">
+              <insert ref="request:object:displayIsRootObject(operation='edit')"/>
+          </if>
+
+        </else>
+      </if>
+
+      <!--
+          <if cond="${viewdef:dslib:routingEnabled}=='Yes'">
+          <insert ref="request:object:add_as_draft:html_edit_value"/>     
+          </if>
+      -->
+
+      <insert ref="local:submitButton"/>
+    </table>
+    <insert ref="request:html:end_form"/>
+  </define>
+
+
+  <define id="Subscription">
+    <tr><td>
+      <insert ref="request:html:begin_form(action='ApplyProps',name='ApplyProps',validate='on',required='all',exclude_props='title+notification_action+script+script_data+external_recipients+sender+subscription_scope',classname='${request:object:classname}',handle='${request:object:handle}')"/>
+      <input name="vdf_results" type="hidden" value="ServicesLib/$request:get_cmd_arg(argname='handle')/Properties"/>
+      <table class="propstable fieldset">
+
+
+        <if cond="${request:object:display_sequence_enabled}">
+
+          <iter ref="request:object:display_sequence(exclude_props='create_date+modified_date+subscription_scope+readyForDeclare+workflow_data+workflow_name')" item="obj">
+            
+            <if cond="${request:object:is_prop(offset='$:_sequence')}">
+              
+              <with ref="request:object:get_prop(name='$obj')">
+
+                <if cond="$:name=='script_data' or $:name=='script'">
+
+                  <if cond="${request:directory:is_admin} and ${request:is_licensed( key='full_subscription_service' )}">
+                    <if cond="$:is_read_only=='false'">
+                      <insert ref=":html_edit_value(formName='ApplyProps')"/>
+                    </if>
+                  </if>
+                  <elif cond="$:name=='notification_action'">
+                    <if cond="${request:directory:is_admin} and ${request:is_licensed( key='full_subscription_service' )}">
+                      <if cond="$:is_read_only=='false'">
+                        <insert ref="local:showAction"/>
+                      </if>
+                    </if>
+                  </elif>
+                  <elif cond="$:name=='external_recipients'">
+                    
+                    <if cond="${request:is_licensed( key='full_subscription_service' )}">
+                      <if cond="$:is_read_only=='false'">
+                        <insert ref=":html_edit_value(formName='ApplyProps')"/>
+                      </if>
+                    </if>
+                    
+                  </elif>
+                  <elif cond="$:name=='subscription_scope'">
+                    <if cond="${:publisher:is_type_of( classname='Collection' )}">
+                      <insert ref="request:object:subscription_scope:html_edit_value"/>
+                    </if>
+                  </elif>
+                  <else>
+                    <if cond="$:is_read_only=='false'">
+                      <insert ref=":html_edit_value(formName='ApplyProps')"/>
+                    </if>
+                  </else>
+                </if>
+              </with>
+              
+            </if>
+            
+          </iter>
+          
+          <else>
+
+
+            <with ref="request:object">
+              <insert ref=":title:html_edit_value"/>
+              <insert ref=":summary:html_edit_value"/>
+              <insert ref=":description:html_edit_value(class='ckeditor')"/>
+              <insert ref=":keywords:html_edit_value"/>
+              <insert ref=":expiration_date:html_edit_value( formName='ApplyProps' )"/>     
+              <insert ref=":rulesEnabled:html_edit_value"/>
+            </with>
+            <iter ref="request:object:props(exclude_props='title+summary+description+keywords+create_date+modified_date+expiration_date+subscription_scope+sender+readyForDeclare+workflow_data+workflow_name')">
+              <if cond="$:name=='script_data' or $:name=='script'">
+                <if cond="${request:directory:is_admin} and ${request:is_licensed( key='full_subscription_service' )}">
+                  <insert ref=":html_edit_value(formName='ApplyProps')" />
+                </if>
+                <elif cond="$:name=='notification_action'">
+                  <if cond="${request:directory:is_admin} and ${request:is_licensed( key='full_subscription_service' )}">
+                    <insert ref="local:showAction"/>
+                  </if>
+                </elif>
+                <elif cond="$:name=='external_recipients'">
+                  <if cond="${request:is_licensed( key='full_subscription_service' )}">
+                    <insert ref=":html_edit_value(formName='ApplyProps')" />
+                  </if>
+                </elif>
+                <elif cond="$:name=='subscription_scope'">
+                  <if cond="${request:object:publisher:is_type_of( classname='Collection' )}">
+                    <insert ref=":html_edit_value(formName='ApplyProps')" />
+                  </if>
+                </elif>
+                <else>
+                  <if cond="$:is_read_only=='false'">
+                    <insert ref=":html_edit_value(formName='ApplyProps')" />
+                  </if>
+                </else>
+              </if>
+            </iter>
+
+            <insert ref="request:object:sender:html_edit_value"/>
+          </else>
+        </if>
+
+        <if cond="${request:object:publisher:is_type_of( classname='Collection' )} or ${request:object:publisher:is_type_of( classname='Workspace' )}">
+          <insert ref="request:object:subscription_scope:html_edit_value"/>
+        </if>
+        
+        <insert ref="local:submitButton"/>
+      </table>
+      
+      
+      
+      <insert ref="request:html:end_form"/>
+    </td></tr>
+  </define>
+
+  <define id="Bulletin">
+    <define id="cgi"><insert ref="request:config:cmd_base"/></define>
+    <tr><td>  
+      <!-- DO NOT TRANSLATE the following section -->
+      <insert ref="request:html:begin_form(action='ApplyProps',name='ApplyProps',validate='on',required='all',exclude_props='summary',classname='${request:object:classname}',handle='${request:object:handle}')"/>
+      <!-- END Do Not Translate section -->
+      <input name="vdf_results" type="hidden" value="ServicesLib/$request:get_cmd_arg(argname='handle')/Properties"/>
+      <table class="fieldset propstable">
+
+        <if cond="${request:object:display_sequence_enabled}">
+
+          <iter ref="request:object:display_sequence(exclude_props='create_date+modified_date+summary+readyForDeclare')" item="obj">
+
+            <if cond="${request:object:is_prop(offset='$:_sequence')}">
+
+              <with ref="request:object:get_prop(name='$obj')">
+                <if cond="$:is_read_only=='false'">
+                  <insert ref=":html_edit_value(formName='ApplyProps')"/>
+                </if>
+              </with>
+
+            </if>
+
+          </iter>
+
+          <else>
+
+            <with ref="request:object">
+              <insert ref=":title:html_edit_value"/>
+              <!--<insert ref=":summary:html_edit_value"/>-->
+              <insert ref=":description:html_edit_value(class='ckeditor')"/>
+              <insert ref=":keywords:html_edit_value"/>   
+            </with>
+            <iter ref="request:object:props(exclude_props='title+summary+description+keywords+create_date+modified_date+readyForDeclare')">
+              <if cond="$:is_read_only=='false'">
+                <insert ref=":html_edit_value( formName='ApplyProps')"/>
+              </if>
+            </iter>
+            
+          </else>
+        </if>
+        <insert ref="local:submitButton"/>
+      </table>
+      
+      
+      
+      <insert ref="request:html:end_form"/>
+    </td></tr>
+  </define>
+
+  <define id="Collection">
+
+    <!-- DO NOT TRANSLATE the following section -->
+    <insert ref="request:html:begin_form(action='ApplyProps',name='ApplyProps',validate='on',required='all',exclude_props='spamControl',classname='${request:object:classname}',handle='${request:object:handle}')"/>
+    <!-- END Do Not Translate section -->
+    <!-- <form action='ApplyProps' name='ApplyProps'> -->
+    <input name="vdf_results" type="hidden" value="ServicesLib/$request:get_cmd_arg(argname='handle')/Properties"/>
+    <table class="propstable fieldset">
+      
+      <if cond="${request:object:display_sequence_enabled}">
+
+        <iter ref="request:object:display_sequence(exclude_props='create_date+modified_date+readyForDeclare')" item="obj">
+
+          <if cond="${request:object:is_prop(offset='$:_sequence')}">
+
+            <with ref="request:object:get_prop(name='$obj')">
+
+              <if cond="$:name=='add_as_draft'">
+                <if cond="${viewdef:dslib:routingEnabled}=='Yes'">
+                  <insert ref=":html_edit_value(formName='ApplyProps')"/>
+                  <insert ref="local:UseRoutingSlip"/>
+                </if>
+                <elif cond="$:name=='emailAlias'">
+                  <if cond="${request:is_licensed( key='email_integration' )}">
+                    <insert ref=":html_edit_value(formName='ApplyProps')"/>
+                  </if>
+                </elif>
+                <elif cond="$:name=='spamControl'">
+                  <if cond="${request:is_licensed( key='email_integration' )}">
+                    <insert ref=":html_edit_value(formName='ApplyProps')"/>
+                  </if>
+                </elif>
+                <else>
+
+                  <if cond="$:is_read_only=='false'">
+                    <insert ref=":html_edit_value(formName='ApplyProps')"/>
+                  </if>
+                  
+                </else>
+              </if>
+              
+              <if cond="$:name=='description'">
+                <insert ref=":html_edit_value(class='ckeditor')"/>
+              </if>
+            </with>
+
+          </if>
+
+        </iter>
+
+        <else>
+
+          <with ref="request:object">
+            <insert ref=":title:html_edit_value"/>
+            <insert ref=":summary:html_edit_value"/>
+            <insert ref=":description:html_edit_value(class='ckeditor')"/>
+            <insert ref=":keywords:html_edit_value"/>
+            <insert ref=":expiration_date:html_edit_value( formName='ApplyProps' )"/>     
+          </with>
+          <iter ref="request:object:props(exclude_props='title+summary+description+keywords+create_date+modified_date+expiration_date+add_as_draft+readyForDeclare')">
+            <if cond="$:name=='emailAlias'">
+              <if cond="${request:is_licensed( key='email_integration' )} and $:is_read_only=='false'">
+                <insert ref=":html_edit_value( formName='ApplyProps' )"/>
+              </if>
+              <elif cond="$:name=='spamControl'">
+                <if cond="${request:is_licensed( key='email_integration' )} and $:is_read_only=='false'">
+                  <insert ref=":html_edit_value(formName='ApplyProps')"/>
+                </if>
+              </elif>
+              <else>
+                <if cond="$:is_read_only=='false'">
+                  <insert ref=":html_edit_value( formName='ApplyProps' )"/>
+                </if>
+              </else>
+            </if>
+          </iter>
+
+          <if cond="${viewdef:dslib:routingEnabled}=='Yes'">
+            <insert ref="request:object:add_as_draft:html_edit_value"/> 
+            <insert ref="local:UseRoutingSlip"/>
+          </if>
+
+        </else>
+      </if>
+      
+      <if cond="${request:directory:is_admin(content_admin='true')}">
+        <insert ref="request:object:displayIsRootObject(operation='edit')"/>      
+      </if>
+
+      <insert ref="local:submitButton"/>
+    </table>
+
+    
+
+    <insert ref="request:html:end_form"/> 
+    <!-- </FORM>-->
+  </define>
+
+  <define id="UseRoutingSlip">
+    <tr>
+      <td align="right" valign="top" class="fieldname"><label><insert ref="viewdef:dslib:PropHelp(name='UseRoutingSlip')"/></label></td>
+      <td>
+        <select name="routing_template_id" size="1" tabindex="1">
+          <if cond="$request:hasRoutingTasks(task_id='${request:object:routing_template_id:get}') == 'true'">
+            <option value="0"><insert ref="request:config:getMessage(key='select')"/>...</option>
+            <else>
+              <option value="0"><insert ref="request:config:getMessage(key='NoneAvailable')"/>...</option>
+            </else>
+          </if>
+          <iter ref="request:getRoutingTasks(task_id='${request:object:routing_template_id:get}')">
+            <if cond="$:value == ${request:object:routing_template_id:get}">
+              <option value="$:value" selected="selected"><insert ref=":name"/></option>
+              <else>
+                <option value="$:value"><insert ref=":name"/></option>
+              </else>
+            </if>
+          </iter>
+        </select>
+      </td>
+    </tr>
+  </define>
+  
+  <define id="XMLGeneric">
+    <define id="baseClassName"><insert ref="viewdef:dslib:baseClassName(classname='${request:object:classname}')" /></define>
+    <xf:group xmlns:xf="http://www.w3.org/2002/xforms" xmlns:ev="http://www.w3.org/2001/xml-events" appearance="minimal">
+      <xf:group ref="/error">
+        <h1><insert ref="viewdef:EditPropertiesMessages:error" /></h1>
+        <!-- Don't offer the back button as the user has tabs to click on instead -->
+        <insert ref="viewdef:XMLGeneric:ErrorUI" />
+      </xf:group>
+      <!-- <xf:group ref="/object" xmlns:xf="http://www.w3.org/2002/xforms" xmlns:ev="http://www.w3.org/2001/xml-events" appearance="minimal">-->
+      <xf:group ref="/object" xmlns:xf="http://www.w3.org/2002/xforms" xmlns:ev="http://www.w3.org/2001/xml-events">
+        <insert ref="request:vdfmgr:lookup(command='XML', type='$baseClassName', id='EditUI')"/>
+      </xf:group>
+      <xf:group ref="/object[not(@edited)]" xmlns:xf="http://www.w3.org/2002/xforms" xmlns:ev="http://www.w3.org/2001/xml-events">
+        <div class="xmlformfooter">
+          <xf:submit submission="ApplyEdit" class="bs" navindex="1" id="showHideSourceCkEditor">
+            <xf:label><insert ref="viewdef:EditPropertiesMessages:apply" /></xf:label>
+          </xf:submit>
+          <if cond="${request:object:classname}=='Wiki' or ${request:object:classname}=='Weblog' or ${request:object:classname}=='WikiPage' or ${request:object:classname}=='WeblogEntry'">
+            <p id="ckeditor-sourcemode-on-warning"><i class="icon-info">&nbsp;</i><insert ref="viewdef:XMLGenericMessages:srcBtnOnMessage"/></p>
+            <insert ref="viewdef:javascript:showHideSourceCkEditor"/>
+          </if>
+        </div>
+      </xf:group>
+      <!-- <xf:group ref="/object[@edited]">-->
+      <xf:group ref="/object/@edited">
+        <em><insert ref="viewdef:EditPropertiesMessages:pleaseWait" /></em>
+        <!-- <xf:action ev:event="xforms-enabled">
+          <xf:load resource="${request:config:cmd_base}Services/${request:object:handle}" />
+        </xf:action>
+        -->
+      </xf:group>
+    </xf:group>
+  </define>
+
+  <!-- for use in editing Event values.  -->
+
+  <define id="edit_repeat">
+    <tr>
+      <td align="right">
+        <insert ref="viewdef:dslib:PropHelp(name='${object:repeat:fullname}')"/>
+        <if cond="${object:repeat:is_required}"><br />
+        <small><insert ref="viewdef:message:required"/></small>
+        </if>
+      </td>
+      <td nowrap="true" valign="top" class="selectbox-inline">
+        <insert ref="viewdef:dslib:edit_prop_raw(prop=$object:repeat)"/>
+        <font class="fieldvalue"> <insert ref="viewdef:EditPropertiesMessages:forATotal" /></font>
+        <input name="num_repeat" class="width-50" type="text" size="4"
+               value="${object:num_repeat}" onchange="if (form.repeat.selectedIndex!=0) {isPosInt(this)}"/>
+        <font class="fieldvalue"> <insert ref="viewdef:EditPropertiesMessages:forATotal2" /></font>
+      </td>
+    </tr>
+  </define>
+
+  <define id="Event">
+    <tr><td>
+      <!-- DO NOT TRANSLATE the following section -->
+      <insert ref="request:html:begin_form(action='ApplyPropsEvent',name='ApplyProps',validate='on',required='all',exclude_props='day+end_time+has_time+month+num_repeat+repeat+start_time+year',classname='${request:object:classname}',handle='${request:object:handle}')"/>
+      <!-- END Do Not Translate section -->
+      <define id="clock24"><insert ref="request:view_message(name='24_hour_clock')"/></define>  
+
+      <table class="propstable fieldset">
+        <with ref="request:object">
+          
+          <if cond="${request:object:display_sequence_enabled}">
+
+            <iter ref="request:object:display_sequence(exclude_props='summary+keywords+create_date+modified_date+repeat+num_repeat+month+day+year+has_time+start_time+end_time')" item="obj">
+
+              <if cond="${request:object:is_prop(offset='$:_sequence')}">
+
+                <with ref="request:object:get_prop(name='$obj')">
+
+                  <if cond="$:is_read_only=='false'">
+                    <insert ref=":html_edit_value(formName='ApplyProps')"/>
+                  </if>
+
+                </with>
+
+              </if>
+
+            </iter>
+
+            <else>
+              
+              <insert ref=":title:html_edit_value"/>
+              <insert ref=":description:html_edit_value(class='ckeditor')"/>
+              <iter ref="request:object:props(exclude_props='title+summary+description+keywords+create_date+modified_date+repeat+num_repeat+month+day+year+has_time+start_time+end_time+readyForDeclare')">
+                <if cond="$:is_read_only=='false'">
+                  <insert ref=":html_edit_value( formName='ApplyProps')"/>
+                </if>
+              </iter>
+
+            </else>
+          </if>
+          
+          <!-- Date -->
+          <tr>
+            <td align="right" valign="top"><insert ref="viewdef:dslib:PropHelp(name='event_date')"/></td>
+            <td valign="top"><!--
+            --><input name="date_value" class="datepicker" value="$:eventDate(format='date_short_4')" size="9" tabindex="1"/><!--
+            --><if cond="${viewdef:dslib:runjs}=='Yes'"><!--
+              --><i class="icon-calendar"><span /></i><!--
+            --></if><!--
+            --><define id="value"><insert ref="request:getDateTimeStringFormat(name='form.date.formatter.forDisplay')"/></define><!--
+            --><insert ref="viewdef:dslib:PropHelpPlusLabel(name='form_date_formatter', linklabel='${local:value}', class='fieldname labelHelpLink', colon='no')"/><!--
+        --></td>
+            <!--              
+                 <td>
+                 <insert ref="viewdef:dslib:edit_date(year=$:year, month=$:month, day=$:day, prefix='')"/>
+                 </td>
+            -->
+          </tr>
+          <!-- Time (No Time)-->
+          <tr>
+            <td align="right" valign="top"><insert ref="viewdef:dslib:PropHelp(name='event_time')"/></td>
+            <td>
+              <if cond="not ${:has_time}">
+                <input type="radio" name="has_time" value="false"
+                       checked="checked" onclick="setHasTime(0, HourList, MinList, form.start_hour, form.start_minute, form.end_hour, form.end_minute)"/>
+                <else>
+                  <input type="radio" name="has_time" value="false" onclick="setHasTime(0, HourList, MinList, form.start_hour, form.start_minute, form.end_hour, form.end_minute)"/>
+                </else>
+                </if><font class="fieldvalue"><insert ref="viewdef:EditPropertiesMessages:noTime" /></font>
+            </td>
+          </tr>
+          <!-- Time -->
+          <tr>
+            <td></td>
+            <td>
+              <table cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                  <td>
+                    <if cond="${:has_time}=='false'">
+                      <input type="radio" name="has_time"
+                             value="true" onclick="setHasTime(1, HourList, MinList, form.start_hour, form.start_minute, form.end_hour, form.end_minute)"/>
+                      <else>
+                        <input type="radio" name="has_time"
+                               value="true" checked="checked" onclick="setHasTime(1, HourList, MinList, form.start_hour, form.start_minute, form.end_hour, form.end_minute)"/>
+                      </else>
+                    </if>
+                  </td>
+                  <td>
+                    <select name="start_hour" size="1" onchange="setEndTime(form.start_hour, form.start_am_pm, form.end_hour, form.end_am_pm)">
+                      <iter ref=":start_hour">
+                        <if cond="$:is_selected">
+                          <option value="$:name" selected="selected"><insert ref=":label"/></option>
+                          <else>
+                            <option value="$:name"><insert ref=":label"/></option>
+                          </else>
+                        </if>
+                      </iter>
+                    </select>
+                  </td>
+                  <td>
+                    <select name="start_minute" size="1">
+                      <iter ref=":start_minute">
+                        <if cond="$:is_selected">
+                          <option value="$:name" selected="selected"><insert ref=":label"/></option>
+                          <else>
+                            <option value="$:name"><insert ref=":label"/></option>
+                          </else>
+                        </if>
+                      </iter>
+                    </select>
+                  </td>
+                  <if cond="${local:clock24}=='no'">
+                    <td>
+                      <font class="fieldvalue">
+                      <if cond="$:start_is_am">
+                        <input type="radio" name="start_am_pm" value="am" checked="checked"/> <font class="fieldvalue"><insert ref="viewdef:AddGenericLibMessages:am" /></font>
+                        <else>
+                          <input type="radio" name="start_am_pm" value="am"/> <font class="fieldvalue"><insert ref="viewdef:AddGenericLibMessages:am" /></font>
+                        </else>
+                      </if>
+                      <if cond="$:start_is_pm">
+                        <input type="radio" name="start_am_pm" value="pm" checked="checked"/> <font class="fieldvalue"><insert ref="viewdef:AddGenericLibMessages:pm" /></font>
+                        <else>
+                          <input type="radio" name="start_am_pm" value="pm"/> <font class="fieldvalue"><insert ref="viewdef:AddGenericLibMessages:pm" /></font>
+                        </else>
+                      </if>
+                      <insert ref="viewdef:dslib:br"/>
+                      </font>
+                    </td>
+                  </if>
+                  <td><font class="fieldvalue">&nbsp;&nbsp;<insert ref="viewdef:EditPropertiesMessages:till" />&nbsp;&nbsp;</font></td>
+                  <td>
+                    <select name="end_hour" size="1">
+                      <iter ref=":end_hour">
+                        <if cond="$:is_selected">
+                          <option value="$:name" selected="selected"><insert ref=":label"/></option>
+                          <else>
+                            <option value="$:name"><insert ref=":label"/></option>
+                          </else>
+                        </if>
+                      </iter>
+                    </select>
+                  </td>
+                  <td>
+                    <select name="end_minute" size="1">
+                      <iter ref=":end_minute">
+                        <if cond="$:is_selected">
+                          <option value="$:name" selected="selected"><insert ref=":label"/></option>
+                          <else>
+                            <option value="$:name"><insert ref=":label"/></option>
+                          </else>
+                        </if>
+                      </iter>
+                    </select>
+                  </td>
+                  <if cond="${local:clock24}=='no'">
+                    <td>
+                      <font class="fieldvalue">
+                      <if cond="$:end_is_am">
+                        <input type="radio" name="end_am_pm" value="am" checked="checked"/> <font class="fieldvalue"><insert ref="viewdef:AddGenericLibMessages:am" /></font>
+                        <else>
+                          <input type="radio" name="end_am_pm" value="am"/> <font class="fieldvalue"><insert ref="viewdef:AddGenericLibMessages:am" /></font>
+                        </else>
+                      </if>
+                      <if cond="$:end_is_pm">
+                        <input type="radio" name="end_am_pm" value="pm" checked="checked"/> <font class="fieldvalue"><insert ref="viewdef:AddGenericLibMessages:pm" /></font>
+                        <else>
+                          <input type="radio" name="end_am_pm" value="pm"/> <font class="fieldvalue"><insert ref="viewdef:AddGenericLibMessages:pm" /></font>
+                        </else>
+                      </if>
+                      <insert ref="viewdef:dslib:br"/>
+                      </font>
+                    </td>
+                  </if>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          <!-- Repeat -->
+          <insert ref="edit_repeat(object=$request:object)"/>
+        </with>
+        <insert ref="local:submitButton"/>
+      </table>
+      
+
+      <insert ref="request:html:end_form"/>     
+    </td></tr>
+  </define>
+
+  <define id="userSpaces">
+    <if cond="${request:is_licensed(key='spaces_enabled')}">
+    <if cond="$request:object:isSpaceMember">
+      <tr>
+        <td align='right' valign='top'>
+          <insert ref=":href_label" />
+        </td>
+        <td>
+          <select name="homeSpace" size="1" tabindex="1">
+            <if cond="$value == ' '"> 
+              <option value=" "  selected="selected"><insert ref="viewdef:EditPropertiesMessages:noHomeSpace"/></option>
+              <else>
+                <option value=" "><insert ref="viewdef:EditPropertiesMessages:noHomeSpace"/></option>
+              </else>
+            </if>
+            <iter ref="request:object:getSpaces" item="space">
+              <if cond="$space:spaceName == $value">
+                <option value="$space:spaceName" selected="selected"><insert ref="space:title"/></option>
+                <else>
+                  <option value="$space:spaceName"><insert ref="space:title"/></option>
+                </else>
+              </if>
+            </iter>
+          </select>
+        </td>
+      </tr>
+      <else>
+        <tr>
+          <td align='right' valign='top'>
+            <insert ref=":href_label" />
+          </td>
+          <td>
+            <insert ref="viewdef:EditPropertiesMessages:noHomeSpace"/>
+          </td>
+        </tr>
+      </else>
+    </if>
+    </if>
+  </define>
+
+  <define id="User">
+    <tr><td>
+      <insert ref="request:html:begin_form(action='ApplyProps',name='ApplyProps',validate='on',required='all',exclude_props='username+password+title+domain+summary+description+keywords+last_whats_new+create_date+modified_date+expiration_date+isRMAdminEnabled+isRMContributorEnabled+isRMCoordinatorEnabled+canDeclareIfContributor+userLevel',classname='${request:object:classname}',handle='${request:object:handle}')"/>
+      
+      <input name="vdf_results" type="hidden" value="ServicesLib/$request:get_cmd_arg(argname='handle')/Properties"/>
+      <table class="propstable fieldset">
+
+        <if cond="${request:object:display_sequence_enabled}">
+
+          <iter ref="request:object:display_sequence(exclude_props='username+password+title+summary+description+keywords+create_date+modified_date+expiration_date+isActive+last_whats_new+last_login+readyForDeclare+isRMAdminEnabled+isRMContributorEnabled+isRMCoordinatorEnabled+canDeclareIfContributor+userLevel+docCountQuota+contentSizeMBQuota')" item="obj">
+
+            <if cond="${request:object:is_prop(offset='$:_sequence')}">
+
+              <with ref="request:object:get_prop(name='$obj')">
+                <if cond="$:name=='last_name' or $:name=='first_name'">
+                  <if cond="${request:isLdapLicensed}">
+                    <if cond="$:is_read_only=='false' and $:is_external=='false'">
+                      <insert ref=":html_edit_value"/>
+                      <elif cond="$:is_read_only=='false' and $:is_external=='true' and not ${request:is_external_domain(domain='${request:object:domain}')}">
+                        <insert ref=":html_edit_value"/>
+                      </elif>
+                      <else>
+                        <insert ref=":html_view_value"/>
+                      </else>
+                    </if>
+                    <else> <!-- LDAP not licensed -->
+                      <if cond="$:is_read_only=='false'">
+                        <insert ref=":html_edit_value"/>
+                        <else>
+                          <insert ref=":html_view_value"/>
+                        </else>
+                      </if>
+                    </else>
+                  </if>
+                  <!-- <elif cond="$:name=='javascriptOn'">
+                    <if cond="${request:config:enable_javascript}=='true'">
+                      <insert ref=":html_edit_value(formName='ApplyProps')"/>
+                    </if>
+                  </elif> AR32001 -->
+                  <elif cond="$:name=='routing_choice'">
+                    <if cond="${viewdef:dslib:routingEnabled}=='Yes'">
+                      <insert ref=":html_edit_value(formName='ApplyProps')"/>
+                    </if>
+                  </elif>
+                  <elif cond="$:name=='attachmentAsURL' or $:name=='noEmailAgentNotifyFor'">
+                    <if cond="${request:is_licensed( key='email_integration' )}">
+                      <insert ref=":html_edit_value(formName='ApplyProps')"/>
+                    </if>
+                  </elif>
+                  <elif cond="$:name=='homeSpace' and $request:has_spaces">
+                    <if cond="${request:object:is_owner_logged_on} or $request:directory:is_admin(site_admin='true',content_admin='true')">
+                      <insert ref="local:userSpaces(value='${:get}')" />
+                    </if>
+                  </elif>
+                  <else>
+
+                    <if cond="${request:isLdapLicensed}">
+
+                      <if cond="$:is_read_only=='false' and $:is_external=='false'">
+                        <insert ref=":html_edit_value(formName='ApplyProps')"/>
+                        <elif cond="$:is_read_only=='false' and $:is_external=='true' and not ${request:is_external_domain(domain='${request:object:domain}')}">
+                          <insert ref=":html_edit_value(formName='ApplyProps')"/>
+                        </elif>
+                      </if>
+
+                      <else> <!-- LDAP not licensed -->
+
+                        <if cond="$:is_read_only=='false'">
+                          <insert ref=":html_edit_value(formName='ApplyProps')"/>
+                        </if>
+
+                      </else>
+                    </if>
+
+                  </else>
+                </if>
+              </with>
+
+            </if>
+
+          </iter>
+          
+          <else>
+
+      <if cond="${request:directory:is_admin(content_admin='true')}">
+            <a href="${request:config:cmd_base}ServicesLib/${request:get_cmd_arg(argname='handle')}/Properties?invisible=true" title="${viewdef:EditPropertiesMessages:showInvisibleProps}"><insert ref="viewdef:EditPropertiesMessages:showInvisibleProps"/></a>
+            </if>
+            
+            <with ref="request:object">
+              <if cond="${request:isLdapLicensed}">
+                <if cond="$:last_name:is_read_only=='false' and $:last_name:is_external=='false'">
+                  <insert ref=":last_name:html_edit_value"/>
+                  <elif cond="$:last_name:is_read_only=='false' and $:last_name:is_external=='true' and not ${request:is_external_domain(domain='${:domain}')}">
+                    <!-- if isExternal is true but user is not in an external domain, allow edit. -->
+                    <insert ref=":last_name:html_edit_value"/>
+                  </elif>
+                  <else>
+                    <insert ref=":last_name:html_view_value"/>
+                  </else>
+                </if>
+                <if cond="$:first_name:is_read_only=='false' and $:first_name:is_external=='false'">
+                  <insert ref=":first_name:html_edit_value"/>
+                  <elif cond="$:first_name:is_read_only=='false' and $:first_name:is_external=='true' and not ${request:is_external_domain(domain='${request:object:domain}')}">
+                    <insert ref=":first_name:html_edit_value"/>
+                  </elif>
+                  <else>
+                    <insert ref=":first_name:html_view_value"/>
+                  </else>
+                </if>
+                
+                <if cond="$:email:is_read_only=='false' and $:email:is_external=='false'">
+                  <insert ref=":email:html_edit_value"/>
+                  <elif cond="$:email:is_read_only=='false' and $:email:is_external=='true' and not ${request:is_external_domain(domain='${request:object:domain}')}">
+                    <insert ref=":email:html_edit_value"/>
+                  </elif>
+                  <else>
+                    <insert ref=":email:html_view_value"/>
+                  </else>
+                </if>
+                <if cond="$:alternateEmail:is_read_only=='false' and $:alternateEmail:is_external=='false'">
+                  <insert ref=":alternateEmail:html_edit_value"/>
+                  <elif cond="$:alternateEmail:is_read_only=='false' and $:alternateEmail:is_external=='true' and not ${request:is_external_domain(domain='${request:object:domain}')}">
+                    <insert ref=":alternateEmail:html_edit_value"/>
+                  </elif>
+                  <else>
+                    <insert ref=":alternateEmail:html_view_value"/>
+                  </else>
+                </if>
+                <!--
+                <if cond="$:phone:is_read_only=='false' and $:phone:is_external=='false'">
+                  <insert ref=":phone:html_edit_value"/>
+                  <elif cond="$:phone:is_read_only=='false' and $:phone:is_external=='true' and not ${request:is_external_domain(domain='${request:object:domain}')}">
+                    <insert ref=":phone:html_edit_value"/>
+                  </elif>
+                  <else>
+                    <insert ref=":phone:html_view_value"/>
+                  </else>
+                </if>
+                -->
+                <if cond="${request:get_cmd_arg(argname='invisible')}=='true' and ${request:directory:is_admin(content_admin='true')}">
+                <iter ref=":props(include_invisible='true', exclude_props='email+alternateEmail+username+last_name+first_name+domain+password+title+summary+description+keywords+create_date+modified_date+expiration_date+isActive+last_whats_new+last_login+routing_choice+attachmentAsURL+javascriptOn+readyForDeclare+isRMAdminEnabled+isRMContributorEnabled+isRMCoordinatorEnabled+canDeclareIfContributor+userLevel+docCountQuota+contentSizeMBQuota+rm_instance_handle+isRecord')">
+                  <if cond="$:name=='noEmailAgentNotifyFor'">
+                    <if cond="${request:is_licensed( key='email_integration' )} and $:is_read_only=='false'">
+                      <insert ref=":html_edit_value( formName='ApplyProps')"/>
+                    </if>
+                    <elif cond="$:name=='homeSpace'">
+                      <insert ref="local:userSpaces(value='${:get}')" />
+                    </elif>
+                    <elif cond="$:is_read_only=='false' and $:is_external=='false'">
+                      <insert ref=":html_edit_value( formName='ApplyProps')"/>
+                    </elif>
+                    <elif cond="$:is_read_only=='false' and $:is_external=='true' and not ${request:is_external_domain(domain='${request:object:domain}')}">
+                      <insert ref=":html_edit_value( formName='ApplyProps')"/>
+                    </elif>
+                  </if>
+                </iter>
+                <else> 
+                <iter ref=":props(exclude_props='email+alternateEmail+username+last_name+first_name+domain+password+title+summary+description+keywords+create_date+modified_date+expiration_date+isActive+last_whats_new+last_login+routing_choice+attachmentAsURL+javascriptOn+readyForDeclare+isRMAdminEnabled+isRMContributorEnabled+isRMCoordinatorEnabled+canDeclareIfContributor+userLevel+docCountQuota+contentSizeMBQuota')">
+                  <if cond="$:name=='noEmailAgentNotifyFor'">
+                    <if cond="${request:is_licensed( key='email_integration' )} and $:is_read_only=='false'">
+                      <insert ref=":html_edit_value( formName='ApplyProps')"/>
+                    </if>
+					<!-- AR33316: When no spaces are added, the Home space field on user’s edit properties page should be grayed out. -->
+                    <elif cond="$:name=='homeSpace'">
+                      <if cond="${request:object:is_owner_logged_on} or $request:directory:is_admin(site_admin='true',content_admin='true')">
+                        <insert ref="local:userSpaces(value='${:get}')" />
+                      </if>
+                    </elif>
+                    <elif cond="$:is_read_only=='false' and $:is_external=='false'">
+                      <insert ref=":html_edit_value( formName='ApplyProps')"/>
+                    </elif>
+                    <elif cond="$:is_read_only=='false' and $:is_external=='true' and not ${request:is_external_domain(domain='${request:object:domain}')}">
+                      <insert ref=":html_edit_value( formName='ApplyProps')"/>
+                    </elif>
+                  </if>
+                </iter>
+                </else>
+                </if>
+
+                <else> <!-- LDAP not licensed -->
+                  <if cond="$:last_name:is_read_only=='false'">
+                    <insert ref=":last_name:html_edit_value"/>
+                    <else>
+                      <insert ref=":last_name:html_view_value"/>
+                    </else>
+                  </if>
+                  <if cond="$:first_name:is_read_only=='false'">
+                    <insert ref=":first_name:html_edit_value"/>
+                    <else>
+                      <insert ref=":first_name:html_view_value"/>
+                    </else>
+                  </if>
+                  
+                  <if cond="$:email:is_read_only=='false'">
+                    <insert ref=":email:html_edit_value"/>
+                  </if>
+                  <if cond="$:alternateEmail:is_read_only=='false'">
+                    <insert ref=":alternateEmail:html_edit_value"/>
+                  </if>
+                  <!--
+                  <if cond="$:phone:is_read_only=='false'">
+                    <insert ref=":phone:html_edit_value"/>
+                  </if>
+                  -->
+                  <iter ref=":props(exclude_props='email+alternateEmail+username+last_name+first_name+domain+password+title+summary+description+keywords+create_date+modified_date+expiration_date+isActive+last_whats_new+last_login+routing_choice+javascriptOn+attachmentAsURL+readyForDeclare+isRMAdminEnabled+isRMContributorEnabled+isRMCoordinatorEnabled+canDeclareIfContributor+userLevel+docCountQuota+contentSizeMBQuota')">
+                    <if cond="$:is_read_only=='false'">
+                      <if cond="$:name=='noEmailAgentNotifyFor'">
+                        <if cond="${request:is_licensed( key='email_integration' )}">
+                          <insert ref=":html_edit_value( formName='ApplyProps')"/> 
+                        </if>
+						<!-- AR33316: When no spaces are added, the Home space field on user’s edit properties page should be grayed out. -->
+                        <elif cond="$:name=='homeSpace'">
+                          <if cond="${request:object:is_owner_logged_on} or $request:directory:is_admin(site_admin='true',content_admin='true')">
+                            <insert ref="local:userSpaces(value='${:get}')" />
+                          </if>
+                        </elif>
+                        <else>
+                          <insert ref=":html_edit_value( formName='ApplyProps')"/> 
+                        </else>
+                      </if>
+                    </if>
+                  </iter>
+                </else>
+              </if>
+              
+              <if cond="$:summary:is_required=='true'">
+                <insert ref=":summary:html_edit_value"/>
+              </if>
+              <if cond="$:description:is_required=='true'">
+                <insert ref=":description:html_edit_value(class='ckeditor')"/>
+              </if>
+              <if cond="$:keywords:is_required=='true'">
+                <insert ref=":keywords:html_edit_value"/>
+              </if>
+
+              <!-- <if cond="${request:config:enable_javascript}=='true'">
+                <insert ref="request:object:javascriptOn:html_edit_value( formName='ApplyProps')"/>
+              </if> AR32001 -->
+              <if cond="${viewdef:dslib:routingEnabled}=='Yes'">
+                <insert ref="request:object:routing_choice:html_edit_value( formName='ApplyProps')"/>
+              </if>
+              <if cond="${request:is_licensed( key='email_integration' )}">
+                <insert ref="request:object:attachmentAsURL:html_edit_value( formName='ApplyProps')"/>
+              </if>
+            </with>
+
+          </else>
+        </if>
+        
+        <if cond="${request:user_obj:hasRMCoordinatorPrivilege}=='true' and ${request:directory:is_admin(account_admin='true')}">
+          <insert ref="request:object:canDeclareIfContributor:html_edit_value"/>
+        </if>
+
+        <if cond="$request:directory:is_admin(content_admin='true') or $request:directory:is_admin(account_admin='true')">
+          <insert ref="request:object:isActive:html_edit_value( formName='ApplyProps')"/>
+        </if>
+
+        <!-- The features for enabling Office integration are found in VDFSession.OFFICE_FEATURE_CHECKOUT_ENABLED, etc. -->
+        <if cond="$request:enableOfficeIntegration(features='windows_only,not_fx_market,checkout_enabled,valid_auth_type')">
+          <insert ref="request:object:get_opt_out_office_integration_html"/>
+        </if>
+
+        <insert ref="local:submitButton"/>
+      </table>
+      
+      
+      
+      <insert ref="request:html:end_form"/>
+    </td></tr>
+  </define>
+
+  <define id="Version">
+
+    <tr>
+      <td>
+        <!-- DO NOT TRANSLATE the following section -->
+        <insert ref="request:html:begin_form(action='ApplyProps',name='ApplyProps',validate='on',required='all',exclude_props='create_date+modified_date+summary+description+keywords',classname='${request:object:classname}',handle='${request:object:handle}')"/>
+        <!-- END Do Not Translate section -->
+        <!-- <form action='ApplyProps' name='ApplyProps'> -->
+        <input name="vdf_results" type="hidden" value="ServicesLib/$request:get_cmd_arg(argname='handle')/Properties"/>
+        <table class="propstable fieldset">
+
+          <with ref="request:object">
+            <insert ref=":title:html_edit_value"/>
+            <insert ref=":expiration_date:html_edit_value( formName='ApplyProps' )"/>     
+          </with>
+          <iter ref="request:object:props(exclude_props='title+summary+description+keywords+create_date+modified_date+expiration_date+readyForDeclare')">
+            <if cond="$:is_read_only=='false'">
+              <insert ref=":html_edit_value( formName='ApplyProps' )"/>
+            </if>
+          </iter>
+
+          <insert ref="local:submitButton"/>
+        </table>
+
+        
+
+        <insert ref="request:html:end_form"/> 
+        <!-- </form>-->
+      </td>
+    </tr>
+
+  </define>
+
+  <define id="submitButton">
+    <insert ref="viewdef:uilib:submitButtonInTable(name='Apply', label='${viewdef:EditPropertiesMessages:apply}')"/>
+  </define>
+
+  <define id="Space">
+    <insert ref="request:html:begin_form(action='ApplyProps',name='ApplyProps',validate='on',required='all',exclude_props='classNames',classname='${request:object:classname}',handle='${request:object:handle}')"/>
+    <table class="propstable fieldset">
+      
+      <if cond="${request:object:display_sequence_enabled}">
+
+        <iter ref="request:object:display_sequence(exclude_props='create_date+modified_date+readyForDeclare+copiedFrom+lastSynchronized+space+classNames')" item="obj">
+          <if cond="${request:object:is_prop(offset='$:_sequence')}">
+            <with ref="request:object:get_prop(name='$obj')">
+              <if cond="$:is_read_only=='false'">
+                <insert ref=":html_edit_value(formName='ApplyProps')"/>
+              </if>
+              
+            </with>
+          </if>
+        </iter>
+
+        <else>
+
+          <with ref="request:object">
+            <insert ref=":title:html_edit_value"/>
+            <insert ref=":summary:html_edit_value"/>
+            <insert ref=":description:html_edit_value(class='ckeditor')"/>
+            <insert ref=":keywords:html_edit_value"/>
+            <insert ref=":expiration_date:html_edit_value( formName='ApplyProps' )"/>     
+          </with>
+          <iter ref="request:object:props(exclude_props='title+summary+description+keywords+create_date+modified_date+expiration_date+add_as_draft+readyForDeclare+copiedFrom+lastSynchronized+space+classNames')">
+            <if cond="$:is_read_only=='false'">
+              <insert ref=":html_edit_value( formName='ApplyProps' )"/>
+            </if>
+          </iter>
+
+        </else>
+      </if>
+      <insert ref="local:submitButton"/>
+    </table>
+
+    
+
+    <insert ref="request:html:end_form"/> 
+  </define>
+
+  <if cond="not ${request:object:canDo(feature='com.xerox.docushare.editProperties')}">
+    <insert ref="viewdef:ViewProperties"/>
+    <else>
+      <div class="propertycontents">
+        <h2><insert ref="viewdef:EditPropertiesMessages:editProps" /></h2>
+
+        <if cond="${request:object:is_type_of( classname='Group' )}">
+          <insert ref="local:Group"/>
+          <elif cond="${request:object:is_type_of( classname='User' )}">
+            <insert ref="local:User"/>
+          </elif>
+          <elif cond="${request:object:is_type_of( classname='Event' )}">
+            <insert ref="local:Event"/>
+          </elif>
+          <elif cond="${request:object:is_type_of( classname='Bulletin' )}">
+            <insert ref="local:Bulletin"/>
+          </elif>
+          <elif cond="${request:object:is_type_of( classname='Subscription' )}">
+            <insert ref="local:Subscription"/>
+          </elif>
+          <elif cond="${request:object:is_type_of( classname='Document' )}">
+            <insert ref="local:Document"/>
+          </elif>
+          <elif cond="${request:object:is_type_of( classname='Collection' )}">
+            <insert ref="local:Collection"/>
+          </elif>
+          <elif cond="${request:object:is_type_of( classname='Version' )}">
+            <insert ref="local:Version"/>
+          </elif>
+          <elif cond="${request:object:is_type_of( classname='WeblogEntry' )} and ${request:getParameter(name='editxml')}!='true')}">
+            <div class="xforms-propswrapper xforms-propswrapper__services xforms-propswrapper__edit xforms-propswrapper__WeblogEntry "><insert ref="local:XMLGeneric"/></div>
+          </elif>
+          <elif cond="${request:object:is_type_of( classname='Weblog' )} and ${request:getParameter(name='editxml')}!='true')}">
+            <div class="xforms-propswrapper xforms-propswrapper__services xforms-propswrapper__edit xforms-propswrapper__Weblog"><insert ref="local:XMLGeneric"/></div>
+          </elif>
+          <elif cond="${request:object:is_type_of( classname='Wiki' )} and ${request:getParameter(name='editxml')}!='true')}">
+            <div class="xforms-propswrapper xforms-propswrapper__services xforms-propswrapper__edit xforms-propswrapper__Wiki"><insert ref="local:XMLGeneric"/></div>
+          </elif>
+          <elif cond="${request:object:is_type_of( classname='WikiPage' )} and ${request:getParameter(name='editxml')}!='true')}">
+            <!-- If the object is a wiki, use a wider wrapper so that the add/edit box will fit without wrapping below the form -->
+            <div class="xforms-propswrapper xforms-propswrapper__services xforms-propswrapper__edit xforms-propswrapper__WikiPage"><insert ref="local:XMLGeneric"/></div>
+          </elif>
+          <elif cond="${request:object:is_type_of( classname='Space' )}">
+            <insert ref="local:Space"/>
+          </elif>
+          <else>
+            <insert ref="local:Generic"/>
+          </else>
+        </if>
+      </div>
+
+    </else>
+  </if>
+
+</viewdef>

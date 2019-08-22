@@ -1,0 +1,1370 @@
+<?xml version="1.0"?>
+  <!DOCTYPE  viewdef [
+    <!ENTITY nbsp "&#160;"> <!-- no-break space = non-breaking space U+00A0 ISOnum -->
+    <!ENTITY copy "&#169;"> <!-- copyright sign, U+00A9 ISOnum -->
+  ]>
+<!-- Copyright (c) 1996-2008 Xerox Corporation.  All Rights Reserved.
+Copyright protection claimed includes all forms and matters of copyrightable material 
+and information now allowed by statutory or judicial law or herein after granted. -->
+<viewdef assert="license,does_upload"
+	 messages="AddGenericLibMessages.vdf">
+  <!-- Don't add assert="write_access" here; add it only at the lowest level of granularity.-->
+  <define id="cgi"><insert ref="request:config:cmd_base"/></define>
+  
+  <define id="AddXMLGeneric">
+    <!-- The XML versions determine write_access themselves -->
+    <div class="xforms-propswrapper xforms-propswrapper__add xforms-propswrapper__add__${request:get_cmd_arg(argname='classname')}">
+      <define id="baseClassName"><insert ref="viewdef:dslib:baseClassName(classname=${request:get_cmd_arg(argname='classname')})" /></define>
+      <div id="add-case"><insert ref="request:vdfmgr:lookup(command='XML', type='$baseClassName', id='AddUI')"/></div> 
+      <div class="xmlformfooter" xmlns:xf="http://www.w3.org/2002/xforms" >
+        <xf:group ref="/object[not(@handle)]" id="showHideSourceCkEditor">  
+          <xf:submit submission="Apply" class="bs" navindex="1">
+            <xf:label><insert ref="viewdef:AddGenericLibMessages:apply" /></xf:label>
+          </xf:submit>
+        </xf:group>
+        <p id="ckeditor-sourcemode-on-warning"><i class="icon-info">&nbsp;</i><insert ref="viewdef:XMLGenericMessages:srcBtnOnMessage"/></p>
+      </div>
+    </div>
+  </define>
+
+  <define id="Generic">
+    <!-- If any generic things don't need write access to Add, migrate them to XMLGeneric -->
+    <viewdef assert="write_content_access" />
+    <insert ref="request:html:begin_form(action='ApplyAdd',name='ApplyAdd',validate='on',required='all',classname='${request:new_object:classname}',handle='${request:handle}')"/>
+
+    <!-- This hidden input field must contain the classname of
+         the object you are creating -->
+    <input name="class" type="hidden" value="${request:new_object:classname}"/>
+    <!-- This hidden input field must contain name of the VDF template
+         you wish to have displayed after the form is applied -->
+
+    <table class="fieldset propstable">
+      <if cond="${request:new_object:display_sequence_enabled}">
+        <iter ref="request:new_object:display_sequence" item="obj">		  
+          <if cond="$:is_read_only=='false'">
+            <insert ref=":html_edit_value(formName='ApplyAdd')"/>
+          <elif cond="$:is_system=='false'"> <!-- we can't edit read-only, system properties -->
+            <insert ref=":html_edit_value(formName='ApplyAdd')"/>
+          </elif>
+          </if>		   
+        </iter>
+        <else>
+          <with ref="request:new_object">
+            <insert ref=":title:html_edit_value"/>
+            <insert ref=":summary:html_edit_value"/>
+            <insert ref=":description:html_edit_value(class='ckeditor')"/>
+            <insert ref=":keywords:html_edit_value( formName='ApplyAdd' )"/>
+            <iter ref=":props(exclude_props='title+summary+description+keywords')">
+              <if cond="$:is_read_only=='false'">
+                <if cond="$:is_system=='true' and $:is_required=='true'">
+                  <insert ref=":html_edit_value(formName='ApplyAdd')"/>
+                  <elif cond="$:is_system=='false'">
+                    <insert ref=":html_edit_value(formName='ApplyAdd')"/>
+                  </elif>
+                </if>
+              <elif cond="$:is_system=='false'"> <!-- we can't edit read-only, system properties -->
+                 <insert ref=":html_edit_value(formName='ApplyAdd')"/>
+              </elif>
+              </if>
+            </iter>
+          </with>
+          
+        </else>
+      </if>
+      <insert ref="viewdef:dslib:initial_permissions_no_table"/>
+    </table>
+    <insert ref="local:endForm"/>
+  </define>
+
+
+  <define id="Collection">
+    <!-- Adding a Collection requires write access. TODO: See if there is a storage API to determine this. -->
+    <viewdef assert="write_content_access" />
+    <!-- DO NOT TRANSLATE the following section -->
+    <insert ref="request:html:begin_form(action='ApplyAdd',name='ApplyAdd',validate='on',required='all',exclude_props='spamControl',classname='${request:new_object:classname}',handle='${request:handle}')"/>
+    <!-- END Do Not Translate section -->
+    
+    <!-- This hidden input field must contain the classname of
+         the object you are creating -->
+    <input name="class" type="hidden" value="${request:new_object:classname}"/>
+    <!-- This hidden input field must contain name of the VDF template
+         you wish to have displayed after the form is applied -->
+    
+    <table  class="fieldset propstable">
+
+      <if cond="${request:new_object:display_sequence_enabled}">
+
+        <iter ref="request:new_object:display_sequence" item="obj">
+
+          <if cond="$:name=='add_as_draft'">
+            <if cond="${viewdef:dslib:routingEnabled}=='Yes'">
+              <if cond="$:is_read_only=='false'">
+                 <insert ref=":html_edit_value(formName='ApplyAdd')"/>
+              <elif cond="$:is_system=='false'"> <!-- we can't edit read-only, system properties -->
+                 <insert ref=":html_edit_value(formName='ApplyAdd')"/>
+              </elif>
+              </if>              
+            </if>
+            <else>
+              <if cond="$:is_read_only=='false'">
+                <insert ref=":html_edit_value(formName='ApplyAdd')"/>
+              <elif cond="$:is_system=='false'"> <!-- we can't edit read-only, system properties -->
+                 <insert ref=":html_edit_value(formName='ApplyAdd')"/>
+              </elif>
+              </if>
+            </else>
+          </if>
+
+        </iter>
+
+        <else>
+
+          <with ref="request:new_object">
+            <insert ref=":title:html_edit_value"/>
+            <insert ref=":summary:html_edit_value"/>
+            <insert ref=":description:html_edit_value(class='ckeditor')"/>
+            <insert ref=":keywords:html_edit_value"/>
+            <insert ref=":view_format:html_edit_value"/>
+            <insert ref=":sort_order:html_edit_value"/>
+            
+            <if cond="${viewdef:dslib:routingEnabled}=='Yes'">
+              <insert ref=":add_as_draft:html_edit_value"/>
+              <insert ref="local:UseRoutingSlip"/>
+            </if>
+            <iter ref=":props(exclude_props='title+summary+description+keywords+view_format+sort_order+add_as_draft+spamControl')">
+              <if cond="$:is_read_only=='false'">
+                <if cond="$:is_system=='true' and $:is_required=='true'">
+                  <insert ref=":html_edit_value( formName='ApplyAdd' )"/>
+                  <elif cond="$:is_system=='false'">
+                    <insert ref=":html_edit_value( formName='ApplyAdd' )"/>
+                  </elif>
+                </if>
+              <elif cond="$:is_system=='false'"> <!-- we can't edit read-only, system properties -->
+                 <insert ref=":html_edit_value(formName='ApplyAdd')"/>
+              </elif>
+              </if>
+            </iter>
+            <!--                
+                 <iter ref=":props(scope='custom')">
+                 <if cond="$:is_read_only=='false'">
+                 <insert ref=":html_edit_value( formName='ApplyAdd' )"/>
+                 </if>
+                 </iter>
+            -->                
+          </with>
+          
+        </else>
+      </if>      
+      
+      <insert ref="viewdef:dslib:initial_permissions_no_table"/>
+      
+    </table>
+	<insert ref="local:endForm"/>
+  </define>
+  
+  <define id="UseRoutingSlip">
+      <tr>
+        <td align="right" valign="top" class="fieldname"><label><insert ref="viewdef:dslib:PropHelp(name='UseRoutingSlip')"/></label></td>
+      <td>
+        <select name="routing_template_id" size="1" tabindex="1">
+          <if cond="$request:hasRoutingTasks == 'true'">
+            <option value="" selected="selected"><insert ref="request:config:getMessage(key='select')"/>...</option>
+          <else>
+            <option value="" selected="selected"><insert ref="request:config:getMessage(key='NoneAvailable')"/>...</option>
+          </else>
+          </if>
+          <iter ref="request:getRoutingTasks">
+            <option value="$:value"><insert ref=":name"/></option>
+          </iter>
+        </select>
+      </td>
+      </tr>
+  </define>
+
+  <define id="Document">
+    <!-- Adding a Document requires write access. TODO: See if there is a storage API to determine this. -->
+    <viewdef assert="write_content_access" />
+    <if cond="${viewdef:dslib:runjs}=='Yes' and ${request:get_cmd_arg(argname='is_interact')}=='' and not ${request:new_object:isPlaceholder}">
+      <script type="text/javascript" src="${local:langroot}javascript/docautotitle.js?v=${request:config:short_version}" />
+      <script type="text/javascript" src="${request:config:abs_path}javascript/common/AddDocument.js?v=${request:config:short_version}" />
+    </if>
+    <!-- DO NOT TRANSLATE the following section -->
+    
+    <insert ref="request:html:begin_form(action='ApplyAddDocument',name='ApplyAddDocument',encoding='multipart/form-data',validate='on',required='all',exclude_props='add_as_draft+isInteract+autoMovePreferredVersion',classname='${request:new_object:classname}',handle='${request:handle}')"/>
+
+    <!-- END Do Not Translate section -->
+    <!-- This hidden input field must contain the classname of
+         the object you are creating -->
+    <input name="class" type="hidden" value="${request:new_object:classname}"/>
+    <define id="record_id"><insert ref="request:get_cmd_arg(argname='record_id')"/></define>
+    <if cond="${local:record_id}!=''">
+      <input name="record_id" type="hidden" value="${local:record_id}"/>
+    </if>
+    <define id="predecessor"><insert ref="request:get_cmd_arg(argname='predecessor')"/></define>
+    <define id="documentSource"><insert ref="request:get_cmd_arg(argname='source')"></insert></define>
+    <if cond="${local:predecessor}!=''">
+      <input name="predecessor" type="hidden" value="${local:predecessor}"/>
+    </if>
+    <define id="localFile">localFile</define>
+    <define id="scannedFile">scannedFile</define>
+    <define id="uploadLater">uploadLater</define>
+
+    <table  class="fieldset propstable">
+      <if cond="${request:get_cmd_arg(argname='template_name')}=='' and ${request:get_cmd_arg(argname='template')}=='' and not ${request:new_object:isPlaceholder} and ${request:object:canDo(feature='com.xerox.docushare.seeCreatePlaceholder')}">
+        <if cond="${viewdef:dslib:runjs}=='Yes'">
+          <tr>
+            <td align="right">
+              <insert ref="viewdef:dslib:PropHelp(name='documentSource')"/>
+            </td>
+            <td>
+              <input type="radio" name="source" value="${local:localFile}" checked="checked" tabindex="1" onclick="displayById('filenameRow'); displayById('fileTextButton');">
+                <insert ref="viewdef:AddGenericLibMessages:localFile" />
+              </input>
+            </td>
+          </tr>
+          <if cond="$request:canDo(feature='com.xerox.docushare.glyphScan')">
+            <tr>
+              <td />
+              <td>
+                <input type="radio" name="source" value="${local:scannedFile}" tabindex="1" onclick="hideById('filenameRow'); hideById('fileTextButton');">
+                  <insert ref="viewdef:AddGenericLibMessages:scannedDocument" />
+                </input>
+              </td>
+            </tr>
+          </if>
+          <tr>
+            <td />
+            <td>
+              <input type="radio" name="source" value="${local:uploadLater}" tabindex="1" onclick="hideById('filenameRow'); hideById('fileTextButton');">
+                <insert ref="viewdef:AddGenericLibMessages:uploadLater" />
+              </input>
+            </td>
+          </tr>
+          <else>  <!-- no javascript -->
+            <if cond="${request:object:canDo(feature='com.xerox.docushare.seeCreatePlaceholder')}">
+              <tr>
+                <td align="right">
+                  <insert ref="viewdef:dslib:PropHelp(name='documentSource')"/>
+                </td>
+                <td>
+                  <if cond="$local:documentSource=='' or $local:documentSource=='${local:localFile}'">
+                    <input type="hidden" name="source" value="${local:localFile}" />
+                    <insert ref="viewdef:AddGenericLibMessages:localFile" />
+                    <elif cond="$local:documentSource=='${local:scannedFile}'">
+                      <input type="hidden" name="source" value="${local:scannedFile}"  />
+                      <insert ref="viewdef:AddGenericLibMessages:scannedDocument" />
+                    </elif>
+                    <elif cond="$local:documentSource=='${local:uploadLater}'">
+                      <input type="hidden" name="source" value="${local:uploadLater}"  />
+                      <insert ref="viewdef:AddGenericLibMessages:uploadLater" />
+                    </elif>
+                  </if>
+                </td>
+              </tr>
+              <if cond="$local:documentSource=='' or $local:documentSource=='${local:localFile}'">
+                <if cond="$request:canDo(feature='com.xerox.docushare.glyphScan')">
+                  <tr>
+                    <td />
+                    <td>
+                      <a href="${request:config:cmd_base}/AddGeneric/${request:get_cmd_arg(argname='parent')}/${request:get_cmd_arg(argname='classname')}/Add?source=${local:scannedFile}"><insert ref="viewdef:AddGenericLibMessages:changetoScannedDocument" /></a>
+                    </td>
+                  </tr>
+                </if>
+                <tr>
+                  <td />
+                  <td>
+                    <a href="${request:config:cmd_base}/AddGeneric/${request:get_cmd_arg(argname='parent')}/${request:get_cmd_arg(argname='classname')}/Add?source=${local:uploadLater}"><insert ref="viewdef:AddGenericLibMessages:changetoUploadLater" /></a>
+                  </td>
+                </tr>
+                <elif cond="$local:documentSource=='${local:scannedFile}'">
+                  <tr>
+                    <td />
+                    <td>
+                      <a href="${request:config:cmd_base}/AddGeneric/${request:get_cmd_arg(argname='parent')}/${request:get_cmd_arg(argname='classname')}/Add?source=${local:localFile}"><insert ref="viewdef:AddGenericLibMessages:changeToLocalFile" /></a>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td />
+                    <td>
+                      <a href="${request:config:cmd_base}/AddGeneric/${request:get_cmd_arg(argname='parent')}/${request:get_cmd_arg(argname='classname')}/Add?source=${local:uploadLater}"><insert ref="viewdef:AddGenericLibMessages:changetoUploadLater" /></a>
+                    </td>
+                  </tr>
+                </elif>
+                <elif cond="$local:documentSource=='${local:uploadLater}'">
+                  <tr>
+                    <td />
+                    <td>
+                      <a href="${request:config:cmd_base}/AddGeneric/${request:get_cmd_arg(argname='parent')}/${request:get_cmd_arg(argname='classname')}/Add?source=${local:localFile}"><insert ref="viewdef:AddGenericLibMessages:changeToLocalFile" /></a>
+                    </td>
+                  </tr>
+                  <if cond="$request:canDo(feature='com.xerox.docushare.glyphScan')">
+                    <tr>
+                      <td />
+                      <td>
+                        <a href="${request:config:cmd_base}/AddGeneric/${request:get_cmd_arg(argname='parent')}/${request:get_cmd_arg(argname='classname')}/Add?source=${local:scannedFile}"><insert ref="viewdef:AddGenericLibMessages:changetoScannedDocument" /></a>
+                      </td>
+                    </tr>
+                  </if>
+                </elif>
+              </if>
+            </if>
+          </else>
+        </if>
+      </if>
+
+      <if cond="$local:documentSource!='${local:scannedFile}' and $local:documentSource!='${local:uploadLater}'">
+        <tr id="filenameRow">
+          <td align="right">
+            <insert ref="viewdef:dslib:PropHelp(name='document_filename')"/>
+            <br/>
+            <small><insert ref="viewdef:message:required"/></small>
+          </td>
+          <td>
+            <if cond="${request:get_cmd_arg(argname='template_name')}!='' and ${request:get_cmd_arg(argname='template')}!=''">
+              <insert ref="request:get_cmd_arg(argname='template_name')"/> <small><i><insert ref="viewdef:AddGenericLibMessages:predefined" /></i></small>
+              <input name="template" type="hidden" value="$request:get_cmd_arg(argname='template')"/>
+              <input name="template_name" type="hidden" value="$request:get_cmd_arg(argname='template_name')"/>
+              <elif cond="${request:get_cmd_arg(argname='template')}!=''">
+                <insert ref="request:get_cmd_arg(argname='template')"/> <small><i><insert ref="viewdef:AddGenericLibMessages:predefined" /></i></small>
+                <input name="template" type="hidden" value="$request:get_cmd_arg(argname='template')"/>
+              </elif>
+              <elif cond="${request:new_object:isPlaceholder}">
+                Placeholder Document <small><i><insert ref="viewdef:AddGenericLibMessages:predefined" /></i></small>
+                <input name="template" type="hidden" value="placeholder.html"/>
+              </elif>
+              <else>
+                <input name="document" type="file" size="30" tabindex="1"/>
+              </else>
+            </if>
+            <if cond="${request:get_cmd_arg(argname='is_interact')}!=''">
+              <input name="is_interact" type="hidden" value="$request:get_cmd_arg(argname='is_interact')"/>
+            </if>
+            
+          </td>
+        </tr>
+      </if>
+
+      <if cond="${request:new_object:display_sequence_enabled}">
+        <iter ref="request:new_object:display_sequence(exclude_props='document+add_as_draft')" item="obj">		  
+          <if cond="$:is_read_only=='false'">
+            <if cond="${:name} == 'description'">
+              <insert ref="request:new_object:description:html_edit_value(class='ckeditor')"/>
+	    <elif cond="${:name} == 'DCN'">
+		<tr><td align='right' valign='top'><label><a class='fieldname labelHelpLink' title="Help" href="/docushare/dsweb/PropHelp/Document.DCN">Document Control Number:</a></label><br/><small>(required)</small></td>
+		  <td><select name='DCN'><insert ref="request:includeJSP(jsp='../tmt/myDCNs.jsp',my_var='my_value')"/></select>
+		    </td>
+		  </tr>
+	    </elif>
+              <else>	
+                <insert ref=":html_edit_value(formName='ApplyAddDocument')"/>
+              </else>
+            </if>
+            <elif cond="$:is_system=='false'"> <!-- we can't edit read-only, system properties -->
+                <insert ref=":html_edit_value(formName='ApplyAddDocument')"/>
+            </elif>
+          </if>
+        </iter>
+        
+        <else>
+
+          <with ref="request:new_object">
+            <insert ref=":title:html_edit_value"/>
+            <insert ref=":summary:html_edit_value"/>
+            <insert ref=":description:html_edit_value(class='ckeditor')"/>
+            <insert ref=":keywords:html_edit_value"/>
+            <insert ref=":expiration_date:html_edit_value( formName='ApplyAddDocument' )"/>
+            <insert ref=":max_versions:html_edit_value"/>
+            <iter ref=":props(exclude_props='title+summary+description+keywords+expiration_date+max_versions+add_as_draft')">
+              <if cond="$:is_read_only=='false'">
+                <if cond="$:is_system=='true' and $:is_required=='true'">
+                  <insert ref=":html_edit_value( formName='ApplyAddDocument' )"/>
+                  <elif cond="$:is_system=='false'">
+                    <insert ref=":html_edit_value( formName='ApplyAddDocument' )"/>
+                  </elif>
+                </if>
+              <elif cond="$:is_system=='false'"> <!-- we can't edit read-only, system properties -->
+                <insert ref=":html_edit_value(formName='ApplyAddDocument')"/>
+              </elif>
+              </if>
+            </iter>
+            <!--                
+                 <iter ref=":props(scope='custom')">
+                 <if cond="$:is_read_only=='false'">
+                 <insert ref=":html_edit_value( formName='ApplyAddDocument' )"/>
+                 </if>
+                 </iter>
+            -->                
+          </with>
+
+        </else>
+      </if>             
+      <insert ref="viewdef:dslib:initial_permissions_no_table"/>
+      
+      <if cond="${viewdef:dslib:routingEnabled}=='Yes'">
+        <tr>
+          <td align="right" valign="top" nowrap="true"><insert ref="viewdef:dslib:PropHelp(name='route_document')"/></td>
+          <if cond="not $request:object:is_type_of(classname='Workspace') and not $request:object:is_type_of(classname='WikiPage') and not $request:object:is_type_of(classname='Bulletin') and $request:object:add_as_draft"><!--get_object(handle=$request:get_cmd_arg(argname='parent')):add_as_draft">-->
+            <td><img src="${request:config:abs_path}images/checkbox.gif" border="0" alt="${viewdef:AddGenericLibMessages:selected}" title="${viewdef:AddGenericLibMessages:selected}"/><font class="fieldvalue"><insert ref="viewdef:AddGenericLibMessages:routeDoc" /></font></td>
+            <input type="hidden" name="route_document" value="yes"/>
+            <else>
+              <td>
+                <input type="radio" name="route_document" value="no" checked="checked" tabindex="1"><font class="fieldvalue"><insert ref="viewdef:AddGenericLibMessages:routeDoc2" /></font></input><br/>
+                <if cond="not $request:object:is_type_of(classname='Workspace') and not $request:object:is_type_of(classname='WikiPage') and not $request:object:is_type_of(classname='Bulletin')">
+                  <input type="radio" name="route_document" value="yes" tabindex="1"><font class="fieldvalue"><insert ref="viewdef:AddGenericLibMessages:routeDoc3" /></font></input><br/>
+                </if>
+                <input type="radio" name="route_document" value="publish" tabindex="1"><font class="fieldvalue"><insert ref="viewdef:AddGenericLibMessages:routeDoc4" /></font></input>
+              </td>
+            </else>
+          </if>
+        </tr>
+      </if>
+
+      <if cond="not ${viewdef:dslib:routingEnabled}=='Yes'">
+        <input type="hidden" name="route_document" value="no"/>
+      </if>
+    </table>
+      
+      <insert ref="local:landingPageSelection"/>
+      <define id="title_label"><insert ref="request:view_message(name='title')" /></define>
+      <define id="filename_label"><insert ref="request:view_message(name='document_filename_label')" /></define>
+      <div class="props_applybuttonrow">     
+	      <if cond="${viewdef:dslib:runjs}=='Yes'">
+	        <define id="langroot"><insert ref="request:config:abs_path"/><insert ref="request:locale:user_lang"/>/</define>
+	        <span id="applyButton">
+	          <if cond="${request:get_cmd_arg(argname='template_name')}!='' or ${request:get_cmd_arg(argname='template')}!=''">
+	            <input type="submit" value="${viewdef:AddGenericLibMessages:apply}" class="bs" onclick="showSpan('applyButton'); return (true);"/>
+	            <else>
+	              <input type="submit" value="${viewdef:AddGenericLibMessages:apply}" class="bs" onclick="if (ApplyAddDocument.source[0].checked) {if (ValidateForm(ApplyAddDocument, 'document', '${local:filename_label}') == false || request:new_object:title =='' || request:new_object:max_versions =='') { return false; } else { showSpan('applyButton'); return (true) }} else {showSpan('applyButton'); return (true); };"/>
+	            </else>
+	          </if>
+	        </span>
+	
+	        <span style="display: none;" id="applyButton">
+	          <i><insert ref="viewdef:AddGenericLibMessages:processRequest" /></i>
+	        </span>
+	      <else>
+          <input type="submit" class="bs submit" value="${viewdef:AddGenericLibMessages:apply}" tabindex="1"/>
+	      </else>
+	      </if>
+      </div>
+
+    <insert ref="request:html:end_form"/>
+
+    
+  </define>
+
+  <define id="Version">
+    <!-- Adding a Version requires write access. TODO: See if there is a storage API to determine this. -->
+    <viewdef assert="write_content_access" />
+    <!-- DO NOT TRANSLATE the following section -->
+    <insert ref="request:html:begin_form(action='ApplyAddVersion',name='ApplyAddVersion',encoding='multipart/form-data',validate='on',required='document+${local:filename_label}+title+${local:title_label}',classname='${request:new_object:classname}',handle='${request:handle}')"/>
+    <!-- END Do Not Translate section -->
+    
+    <!-- This hidden input field must contain the classname of
+         the object you are creating -->
+    <input name="class" type="hidden" value="${request:new_object:classname}"/>
+    <!-- This hidden input field must contain the handle of the
+         object which will contain the new object -->
+    <input name="parents" type="hidden" value="${request:handle}"/>
+    <!-- This hidden input field must contain name of the VDF template
+         you wish to have displayed after the form is applied -->
+
+    <table  class="fieldset propstable">
+      <tr>
+        <td align="right">
+          <insert ref="viewdef:dslib:PropHelp(name='document_filename')"/>
+          <br/>
+          <small><insert ref="viewdef:message:required"/></small>
+        </td>
+        <td>
+          <if cond="${request:get_cmd_arg(argname='template_name')}!=''">
+            <insert ref="request:get_cmd_arg(argname='template_name')"/> <small><i><insert ref="viewdef:AddGenericLibMessages:predefined" /></i></small>
+            <input name="template" type="hidden" value="$request:get_cmd_arg(argname='template')"/>
+            <input name="template_name" type="hidden" value="$request:get_cmd_arg(argname='template_name')"/>
+            <elif cond="${request:get_cmd_arg(argname='template')}!=''">
+              <insert ref="request:get_cmd_arg(argname='template')"/> <small><i><insert ref="viewdef:AddGenericLibMessages:predefined" /></i></small>
+              <input name="template" type="hidden" value="$request:get_cmd_arg(argname='template')"/>
+            </elif>
+            <else>
+              <input name="document" type="file" size="30" tabindex="1"/>
+            </else>
+          </if>
+          <if cond="${request:get_cmd_arg(argname='is_interact')}!=''">
+            <input name="is_interact" type="hidden" value="$request:get_cmd_arg(argname='is_interact')"/>
+          </if>
+        </td>
+      </tr>
+
+      <!--
+          <if cond="${request:get_cmd_arg(argname='template')}!=''">
+          <tr>
+          <td align="right">
+          <insert ref="viewdef:dslib:PropHelp(name='make_container_collection')"/>
+          </td>
+          <td>
+          <if cond="${request:get_cmd_arg(argname='make_collection')}=='1'">
+          <input name="make_collection" type="radio" value="1" checked="checked"/>Yes
+          <input name="make_collection" type="radio" value="0"/>No
+          <else>
+          <input name="make_collection" type="radio" value="1"/>Yes
+          <input name="make_collection" type="radio" value="0" checked="checked"/>No
+          </else>
+          </if>
+          </td>
+          </tr>
+          </if>
+      -->
+
+      <with ref="request:new_object">
+        <!--<insert ref="request:object:title:html_view_value"/>-->
+        <insert ref="request:object:title:html_edit_value"/>
+        <tr>
+        <td align="right" valign="top" nowrap="true"> </td><td><input type="checkbox" name="updateDocTitle" tabindex="1" id="updateDocTitle" /><label for="updateDocTitle"><insert ref="viewdef:AddGenericLibMessages:updateDocTitle" /></label></td>
+        </tr>
+        <insert ref=":revision_comments:html_edit_value"/>
+        <input name="inherit" type="hidden" value="yes"/>
+        <iter ref=":props(scope='custom')">
+          <if cond="$:is_read_only=='false'">
+            <insert ref=":html_edit_value( formName='ApplyAddVersion' )"/>
+          <elif cond="$:is_system=='false'"> <!-- we can't edit read-only, system properties -->
+            <insert ref=":html_edit_value(formName='ApplyAddVersion')"/>
+          </elif>
+          </if>
+        </iter>
+      </with>
+      <if cond="${request:object:is_locked}">
+        <tr>
+          <td align="right" valign="top" nowrap="true"><insert ref="viewdef:dslib:PropHelp(name='unlock_document')"/></td>
+          <td>
+            <input type="radio" name="unlockDocument" value="yes" checked="checked" tabindex="1" id="unlockDocument_yes" /><label for="unlockDocument_yes"><insert ref="viewdef:AddGenericLibMessages:yes" /></label>
+            <input type="radio" name="unlockDocument" value="no" tabindex="1" id="unlockDocument_no" /><label for="unlockDocument_no"><insert ref="viewdef:AddGenericLibMessages:no" /></label>
+          </td>
+        </tr>
+      </if>
+
+      <if cond="not ${request:object:autoMovePreferredVersion}">
+        <tr>
+          <td align="right" valign="top" nowrap="true"><insert ref="viewdef:dslib:PropHelp(name='set_as_preferred_version')"/></td>
+          <td>
+            <input type="radio" name="setVersionPreferred" value="yes" tabindex="1" id="setVersionPreferred_yes" /><label for="setVersionPreferred_yes"><insert ref="viewdef:AddGenericLibMessages:yes" /></label>
+            <input type="radio" name="setVersionPreferred" value="no" checked="checked" tabindex="1" id="setVersionPreferred_no" /><label for="setVersionPreferred_no"><insert ref="viewdef:AddGenericLibMessages:no" /></label>
+          </td>
+        </tr>
+      </if>
+      <tr>
+        <td></td>
+        <td><insert ref="local:submitButton"/></td>
+      </tr>
+    </table>
+    
+    
+    
+    <insert ref="request:html:end_form"/>
+
+  </define>
+
+  <define id="MailMessage">
+    <!-- Adding a MailMessage requires write access. TODO: See if there is a storage API to determine this. -->
+    <viewdef assert="write_content_access" />    
+    <!-- DO NOT TRANSLATE the following section -->
+    <insert ref="request:html:begin_form(action='ApplyAddMailMessage',name='ApplyAddMailMessage',validate='on',required='all',classname='${request:new_object:classname}',handle='${request:handle}')"/>
+    <!-- END Do Not Translate section -->
+
+    <!-- This hidden input field must contain the classname of
+         the object you are creating -->
+    <input name="class" type="hidden" value="${request:new_object:classname}"/>
+    <!-- This hidden input field must contain the handle of the
+         object which will contain the new object -->
+    <input name="parents" type="hidden" value="${request:handle}"/>
+    <!-- This hidden input field must contain name of the VDF template
+         you wish to have displayed after the form is applied -->
+
+    <!-- I'm sure there's a better way to do this... -->
+    <input type="hidden" name="title" value="this will be replaced by ApplyAddMailMessage"/>
+
+
+    <table  class="fieldset propstable">
+
+      <if cond="${request:new_object:display_sequence_enabled}">
+
+        <iter ref="request:new_object:display_sequence" item="obj">
+          <if cond="$:is_read_only=='false'">
+            <insert ref=":html_edit_value(formName='ApplyAddMailMessage')"/>
+          <elif cond="$:is_system=='false'"> <!-- we can't edit read-only, system properties -->
+            <insert ref=":html_edit_value(formName='ApplyAddMailMessage')"/>
+          </elif>
+          </if>
+        </iter>
+        
+        <else>
+
+          <with ref="request:new_object">
+            <insert ref=":subject:html_edit_value"/>
+            <insert ref=":from:html_edit_value"/>
+            <insert ref=":to:html_edit_value"/>
+            <insert ref=":cc:html_edit_value"/>
+            <insert ref=":postedDate:html_edit_value"/>
+            <insert ref=":received:html_edit_value"/>
+            <insert ref=":body:html_edit_value"/>
+            <!--<iter ref=":props(exclude_props='title+summary+description+from+to+cc+postedDate+received+body')">-->
+            <iter ref=":props(exclude_props='title+summary+description+from+to+cc+postedDate+body')">
+              <if cond="$:is_read_only=='false'">
+                <if cond="$:is_system=='true' and $:is_required=='true'">
+                  <insert ref=":html_edit_value( formName='ApplyAddMailMessage' )"/>
+                  <elif cond="$:is_system=='false'">
+                    <insert ref=":html_edit_value( formName='ApplyAddMailMessage' )"/>
+                  </elif>
+                </if>
+              <elif cond="$:is_system=='false'"> <!-- we can't edit read-only, system properties -->
+                <insert ref=":html_edit_value(formName='ApplyAddMailMessage')"/>
+              </elif>
+              </if>
+            </iter>
+            <!--
+                <iter ref=":props(scope='custom')">
+                <if cond="$:is_read_only=='false'">                 
+                <insert ref=":html_edit_value( formName='ApplyAddMailMessage' )"/>
+                </if>
+                </iter>
+            -->                 
+          </with>
+
+        </else>
+      </if>             
+      <insert ref="viewdef:dslib:initial_permissions_no_table"/>
+    </table>
+    
+    <insert ref="local:endForm"/>
+    
+  </define>
+
+  <define id="Subscriptions">
+    <tr>
+      <td><insert ref="viewdef:AddGenericLibMessages:note" /><form>
+        </form></td>
+    </tr>
+  </define>
+
+  <define id="Bulletin">
+    <!-- Adding a Bulletin requires write access. TODO: See if there is a storage API to determine this. -->
+    <viewdef assert="write_content_access" />    
+    <!-- DO NOT TRANSLATE the following section -->
+    <insert ref="request:html:begin_form(action='ApplyAdd',name='ApplyAdd',validate='on',required='all',exclude_props='summary',classname='${request:new_object:classname}',handle='${request:handle}')"/>
+    <!-- END Do Not Translate section -->
+
+    <!-- This hidden input field must contain the classname of
+         the object you are creating -->
+    <input name="class" type="hidden" value="${request:new_object:classname}"/>
+    <!-- This hidden input field must contain name of the VDF template
+         you wish to have displayed after the form is applied -->
+    
+    <table  class="fieldset propstable">
+
+      <if cond="${request:new_object:display_sequence_enabled}">
+
+        <iter ref="request:new_object:display_sequence(exclude_props='summary')" item="obj">
+          <if cond="$:is_read_only=='false'">
+            <insert ref=":html_edit_value(formName='ApplyAdd')"/>
+          <elif cond="$:is_system=='false'"> <!-- we can't edit read-only, system properties -->
+            <insert ref=":html_edit_value(formName='ApplyAdd')"/>
+          </elif>
+          </if>
+        </iter>
+        
+        <else>
+
+          <with ref="request:new_object">
+            <insert ref=":title:html_edit_value"/>
+            <insert ref=":description:html_edit_value(class='ckeditor')"/>
+            <insert ref=":keywords:html_edit_value"/>
+            <iter ref=":props(exclude_props='title+description+keywords+summary')">
+              <if cond="$:is_read_only=='false'">
+                <if cond="$:is_system=='true' and $:is_required=='true'">
+                  <insert ref=":html_edit_value( formName='ApplyAdd' )"/>
+                  <elif cond="$:is_system=='false'">
+                    <insert ref=":html_edit_value( formName='ApplyAdd' )"/>
+                  </elif>
+                </if>
+              <elif cond="$:is_system=='false'"> <!-- we can't edit read-only, system properties -->
+                <insert ref=":html_edit_value(formName='ApplyAdd')"/>
+              </elif>
+              </if>
+            </iter>
+          </with>
+
+        </else>
+      </if>             
+      <insert ref="viewdef:dslib:initial_permissions_no_table"/>
+
+    </table>
+    
+    <insert ref="local:submitButton"/>
+    
+    <insert ref="request:html:end_form"/>
+
+  </define>
+
+
+  <define id="context_year"><if cond="${request:get_cmd_arg(argname='year')}!=''"><insert ref="request:get_cmd_arg(argname='year')"/><else><insert ref="request:utility:current_year"/></else></if></define>
+  <define id="context_month"><if cond="${request:get_cmd_arg(argname='month')}!=''"><insert ref="request:get_cmd_arg(argname='month')"/><else><insert ref="request:utility:current_month"/></else></if></define>
+  <define id="context_day"><if cond="${request:get_cmd_arg(argname='day')}!=''"><insert ref="request:get_cmd_arg(argname='day')"/><else><insert ref="request:utility:current_day"/></else></if></define>
+
+  <define id="Event">
+    <!-- Adding an Event requires write access. TODO: See if there is a storage API to determine this. -->
+    <viewdef assert="write_content_access" />    
+    <!-- DO NOT TRANSLATE the following section -->
+    <insert ref="request:html:begin_form(action='ApplyAdd',name='ApplyAdd',validate='on',required='all',exclude_props='day+end_time+has_time+month+num_repeat+repeat+start_time+year',classname='${request:new_object:classname}',handle='${request:handle}')"/>
+    <!-- END Do Not Translate section -->
+
+    <!-- This hidden input field must contain the classname of
+         the object you are creating -->
+    <input name="class" type="hidden" value="${request:new_object:classname}"/>
+    <!-- This hidden input field must contain the handle of the
+         object which will contain the new object -->
+    <input name="parents" type="hidden" value="${request:handle}"/>
+    <!-- This hidden input field must contain name of the VDF template
+         you wish to have displayed after the form is applied -->
+
+    <define id="_view"><insert ref="request:get_cmd_arg(argname='view')"/></define>
+    <input name="view" type="hidden" value="${local:_view}"/>
+
+    <define id="clock24"><insert ref="request:view_message(name='24_hour_clock')"/></define>  
+    <table  class="propstable fieldset"> 
+
+      <with ref="request:new_object">
+        
+        <if cond="${request:new_object:display_sequence_enabled}">
+
+          <iter ref="request:new_object:display_sequence(exclude_props='day+end_time+has_time+month+num_repeat+repeat+start_time+year')" item="obj">
+            <if cond="$:is_read_only=='false'">
+              <insert ref=":html_edit_value(formName='ApplyAdd')"/>
+            <elif cond="$:is_system=='false'"> <!-- we can't edit read-only, system properties -->
+              <insert ref=":html_edit_value(formName='ApplyAdd')"/>
+            </elif>
+            </if>
+          </iter>
+
+          <else>
+
+            <insert ref=":title:html_edit_value"/>
+            <insert ref=":description:html_edit_value(class='ckeditor')"/>
+            <iter ref=":props(exclude_props='title+description+day+end_time+has_time+month+num_repeat+repeat+start_time+year')">
+              <if cond="$:is_read_only=='false'">
+                <if cond="$:is_system=='true' and $:is_required=='true'">
+                  <insert ref=":html_edit_value( formName='ApplyAdd' )"/>
+                  <elif cond="$:is_system=='false'">
+                    <insert ref=":html_edit_value( formName='ApplyAdd' )"/>
+                  </elif>
+                </if>
+              <elif cond="$:is_system=='false'"> <!-- we can't edit read-only, system properties -->
+                <insert ref=":html_edit_value(formName='ApplyAdd')"/>
+              </elif>
+              </if>
+            </iter>
+
+          </else>
+        </if>
+        
+        <tr>
+          <td align="right" valign="top" nowrap="true"><insert ref="viewdef:dslib:PropHelp(name='event_date')"/></td>
+          <td>
+                  <define id="_year"><insert ref="request:get_cmd_arg(argname='year')"/></define>
+                  <define id="_month"><insert ref="request:get_cmd_arg(argname='month')"/></define>
+                  <define id="_day"><insert ref="request:get_cmd_arg(argname='day')"/></define>
+                  <if cond="$local:_day != '' and $local:_year != '' and $local:_month != ''">
+                <input name="date_value" class="datepicker" value="${request:get_date(day='$local:_day',month='$local:_month',year='$local:_year',format='date_short_4')}" size="9" tabindex="1"/>
+                    <else>
+                      <input name="date_value" class="datepicker" type="text" value="${request:today(format='date_short_4')}" size="9" tabindex="1"/>
+                    </else>
+                  </if>
+                  <if cond="${viewdef:dslib:runjs}=='Yes'">
+                    <!--<define id="format_4"><insert ref="request:getDateTimeStringFormat(name='date_short_4')"/></define>
+                    <define id="showCalendar"><a href="javascript:show_calendar('ApplyAdd.${name}', '${local:format_4}', '${request:config:abs_path}')"><img src="${request:config:abs_path}images/calendar.gif" align="absmiddle" border="0" alt="${viewdef:AddGenericLibMessages:pickDate}" title="${viewdef:AddGenericLibMessages:pickDate}"/></a></define>
+                    <insert ref="local:showCalendar(name='date_value')"/>
+                  -->
+                <i class="icon-calendar"><span /></i>
+                  </if>
+                  <define id="value"><insert ref="request:getDateTimeStringFormat(name='form.date.formatter.forDisplay')"/></define>
+              <insert ref="viewdef:dslib:PropHelpPlusLabel(name='form_date_formatter', linklabel='${local:value}', class='fieldname labelHelpLink', colon='no')"/>
+                <!-- DATE BLOCK ENDS HERE -->
+          </td>
+        </tr>
+        <tr>
+          <td align="right" valign="top" nowrap="true"><insert ref="viewdef:dslib:PropHelp(name='event_time')"/></td>
+          <td>
+            <if cond="${viewdef:dslib:runjs}=='Yes'">
+                    <input type="radio" name="has_time" value="false" onclick="setHasTime(0, HourList, MinList, form.start_hour, form.start_minute, form.end_hour, form.end_minute)"/>
+                <else>
+                    <input type="radio" name="has_time" value="false"/>
+                </else>
+            </if>
+            <font class="fieldvalue"><insert ref="request:view_message(name='NoTime')"/></font>
+          </td>
+          </tr><tr><td> </td>
+          <td>
+            <table cellpadding="0" cellspacing="0">
+              <tr>
+                <td>
+                  <if cond="${viewdef:dslib:runjs}=='Yes'">
+                        <input type="radio" name="has_time" value="true" checked="checked" onclick="setHasTime(1, HourList, MinList, form.start_hour, form.start_minute, form.end_hour, form.end_minute)"/>
+                    <else>
+                        <input type="radio" name="has_time" value="true" checked="checked"/>
+                    </else>
+                  </if>
+                </td>
+                <td>
+                  <if cond="${viewdef:dslib:runjs}=='Yes'">
+                      <select name="start_hour" size="1" onchange="setEndTime(form.start_hour, form.start_am_pm, form.end_hour, form.end_am_pm)">
+                        <iter ref=":start_hour">
+                          <if cond="$:is_selected">
+                            <option value="$:name" selected="selected"><insert ref=":label"/></option>
+                            <else>
+                              <option value="$:name"><insert ref=":label"/></option>
+                            </else>
+                          </if>
+                        </iter>
+                      </select>
+
+                      <else>
+                          <select name="start_hour" size="1">
+                            <iter ref=":start_hour">
+                              <if cond="$:is_selected">
+                                <option value="$:name" selected="selected"><insert ref=":label"/></option>
+                                <else>
+                                  <option value="$:name"><insert ref=":label"/></option>
+                                </else>
+                              </if>
+                            </iter>
+                          </select>
+                      </else>
+                  </if>
+                </td>
+                <td>
+                  <select name="start_minute" size="1">
+                    <iter ref=":start_minute">
+                      <if cond="$:is_selected">
+                        <option value="$:name" selected="selected"><insert ref=":label"/></option>
+                        <else>
+                          <option value="$:name"><insert ref=":label"/></option>
+                        </else>
+                      </if>
+                    </iter>
+                  </select>
+                </td>
+                
+                <if cond="${request:view_message(name='24_hour_clock')}=='no'">
+                  <td>
+                    <font class="fieldvalue">
+                      <input type="radio" name="start_am_pm" value="am" checked="checked"/> <font class="fieldvalue"><insert ref="viewdef:AddGenericLibMessages:am" /></font>
+                      <input type="radio" name="start_am_pm" value="pm"/> <font class="fieldvalue"><insert ref="viewdef:AddGenericLibMessages:pm" /></font>
+                      <insert ref="viewdef:dslib:br"/>
+                    </font>
+                  </td>
+                </if>
+                <!--<TD> until </TD>-->
+                <td><font class="fieldvalue">&amp;nbsp;&amp;nbsp;<insert ref="request:view_message(name='Until')"/>&amp;nbsp;&amp;nbsp;</font> </td>
+                <td>
+                  <select name="end_hour" size="1">
+                    <iter ref=":end_hour">
+                      <if cond="$:is_selected">
+                        <option value="$:name" selected="selected"><insert ref=":label"/></option>
+                        <else>
+                          <option value="$:name"><insert ref=":label"/></option>
+                        </else>
+                      </if>
+                    </iter>
+                  </select>
+                </td>
+                <td>
+                  <select name="end_minute" size="1">
+                    <iter ref=":end_minute">
+                      <if cond="$:is_selected">
+                        <option value="$:name" selected="selected"><insert ref=":label"/></option>
+                        <else>
+                          <option value="$:name"><insert ref=":label"/></option>
+                        </else>
+                      </if>
+                    </iter>
+                  </select>
+                </td>
+                <if cond="${local:clock24}=='no'">
+                  <td>
+                    <font class="fieldvalue">
+                      <input type="radio" name="end_am_pm" value="am" checked="checked"/> <font class="fieldvalue"><insert ref="viewdef:AddGenericLibMessages:am" /></font>
+                      <input type="radio" name="end_am_pm" value="pm"/> <font class="fieldvalue"><insert ref="viewdef:AddGenericLibMessages:pm" /></font>
+                      <insert ref="viewdef:dslib:br"/>
+                    </font>
+                  </td>
+                </if>
+              </tr>
+            </table>
+          </td>
+        </tr>
+        
+        <tr>
+          <td align="right" valign="top">
+            <insert ref="viewdef:dslib:PropHelp(name='${:repeat:fullname}')"/>
+            <if cond="${:repeat:is_required}"><br/>
+            <small><insert ref="viewdef:message:required"/></small>
+            </if>
+          </td>
+
+          <td>
+            <table>
+              <tr>
+                <td>
+                  <if cond="${viewdef:dslib:runjs}=='Yes'">
+                      <select name="repeat" size="1" onchange="isPosInt(form.num_repeat)">
+                        <iter ref=":repeats">
+                          <if cond="$:is_selected">
+                            <option value="$:name" selected="selected"><insert ref=":label"/></option>
+                            <else>
+                              <option value="$:name"><insert ref=":label"/></option>
+                            </else>
+                          </if>
+                        </iter>
+                      </select>
+                      <else>
+                          <select name="repeat" size="1">
+                            <iter ref=":repeats">
+                              <if cond="$:is_selected">
+                                <option value="$:name" selected="selected"><insert ref=":label"/></option>
+                                <else>
+                                  <option value="$:name"><insert ref=":label"/></option>
+                                </else>
+                              </if>
+                            </iter>
+                          </select>
+                      </else>
+                  </if>
+
+                </td>
+                <!--<TD ALIGN="right">for a total of</TD>-->
+                <td><font class="fieldvalue"><input type="radio" name="end_by_date_or_occurrence" value="occurrence" checked="checked"
+                                                    onclick="form.end_date_value.disabled=true;form.num_repeat.disabled=false;"/>
+                    <insert ref="request:view_message(name='ForTotalOf')"/></font></td>
+                <td>
+                  <if cond="${viewdef:dslib:runjs}=='Yes'">
+                      <input name="num_repeat" type="text" size="4" value="10" onchange="isPosInt(this)"/>
+                  <else>
+                      <input name="num_repeat" type="text" size="4" value="10"/>
+                  </else>
+                  </if>
+                </td>
+                <td><font class="fieldvalue"><insert ref="request:view_message(name='occurrence')"/></font></td>
+              </tr>
+
+                <tr>
+                  <td/>
+                  <!--<TD ALIGN="right">for a total of</TD>-->
+                  <td><input type="radio" name="end_by_date_or_occurrence" value="date"
+                             onclick="form.end_date_value.disabled=false;form.num_repeat.disabled=true;"/><font class="fieldvalue"><insert ref="viewdef:AddGenericLibMessages:endBy" /></font></td>
+                    <!-- DATE BLOCK STARTS HERE -->
+                    <td valign="top" colspan="2">
+                      <define id="period_year"><insert ref="request:get_cmd_arg(argname='year')"/></define>
+                      <define id="period_month"><insert ref="request:get_cmd_arg(argname='month')"/></define>
+                      <define id="period_day"><insert ref="request:get_cmd_arg(argname='day')"/></define>
+                      <if cond="$local:period_day != '' and $local:period_year != '' and $local:period_month != ''">
+                        <input name="end_date_value" class="datepicker width-50" type="text" disabled="true" value="${request:get_date(day='$local:period_day',month='$local:period_month',year='$local:period_year',format='date_short_4')}" size="9" tabindex="1"/>
+                        <else>
+                          <input name="end_date_value" class="datepicker width-50" type="text" disabled="true" value="${request:today(format='date_short_4')}" size="9" tabindex="1"/>
+                        </else>
+                      </if>
+                      <if cond="${viewdef:dslib:runjs}=='Yes'">
+                        <!--<insert ref="local:showCalendar(name='end_date_value')"/>-->
+                        <i class="icon-calendar">
+                        </i>
+                      </if>
+                      <insert ref="viewdef:dslib:PropHelpPlusLabel(name='form_date_formatter', linklabel='${local:value}', class='fieldname labelHelpLink', colon='no')"/>
+                    </td>
+                    <!-- DATE BLOCK ENDS HERE -->
+                </tr>
+
+            </table>
+          </td>
+        </tr>
+
+        <insert ref="viewdef:dslib:initial_permissions_no_table"/>
+        
+      </with>
+      
+    </table>
+	<insert ref="local:endForm"/>
+  </define>
+
+
+  <define id="URL">
+    <!-- Adding a URL requires write access. TODO: See if there is a storage API to determine this. -->
+    <viewdef assert="write_content_access" />
+    <!-- DO NOT TRANSLATE the following section -->
+    <insert ref="request:html:begin_form(action='ApplyAdd',name='ApplyAdd',validate='on',required='all',classname='${request:new_object:classname}',handle='${request:handle}')"/>
+    <!-- END Do Not Translate section -->
+
+    <!-- This hidden input field must contain the classname of
+         the object you are creating -->
+    <input name="class" type="hidden" value="${request:new_object:classname}"/>
+    <!-- This hidden input field must contain the handle of the
+         object which will contain the new object -->
+    <input name="parents" type="hidden" value="${request:handle}"/>
+    <!-- This hidden input field must contain name of the VDF template
+         you wish to have displayed after the form is applied -->
+
+    <table  class="fieldset propstable">
+
+      <if cond="${request:new_object:display_sequence_enabled}">
+
+        <iter ref="request:new_object:display_sequence" item="obj">
+          <if cond="$:is_read_only=='false'">
+            <insert ref=":html_edit_value(formName='ApplyAdd')"/>
+          <elif cond="$:is_system=='false'"> <!-- we can't edit read-only, system properties -->
+            <insert ref=":html_edit_value(formName='ApplyAdd')"/>
+          </elif>
+          </if>
+        </iter>
+        
+        <else>
+
+          <with ref="request:new_object">
+            <insert ref=":url:html_edit_value"/>
+            <insert ref=":title:html_edit_value"/>
+            <insert ref=":summary:html_edit_value"/>
+            <insert ref=":description:html_edit_value(class='ckeditor')"/>
+            <insert ref=":keywords:html_edit_value"/>
+            <iter ref=":props(exclude_props='url+title+summary+description+keywords')">
+              <if cond="$:is_read_only=='false'">
+                <if cond="$:is_system=='true' and $:is_required=='true'">
+                  <insert ref=":html_edit_value( formName='ApplyAdd' )"/>
+                  <elif cond="$:is_system=='false'">
+                    <insert ref=":html_edit_value( formName='ApplyAdd' )"/>
+                  </elif>
+                </if>
+              <elif cond="$:is_system=='false'"> <!-- we can't edit read-only, system properties -->
+                <insert ref=":html_edit_value(formName='ApplyAdd')"/>
+              </elif>
+              </if>
+            </iter>
+          </with>
+
+        </else>
+      </if>             
+      <insert ref="viewdef:dslib:initial_permissions_no_table"/>
+
+      
+    </table>
+	<insert ref="local:endForm"/>
+  </define>
+
+  <define id="BulletinBoard">
+    <!-- Adding a BulletinBoard requires write access. TODO: See if there is a storage API to determine this. -->
+    <viewdef assert="write_content_access" />
+    <!-- DO NOT TRANSLATE the following section -->
+    <insert ref="request:html:begin_form(action='ApplyAdd',name='ApplyAdd',validate='on',required='all',classname='${request:new_object:classname}',handle='${request:handle}')"/>
+    <!-- END Do Not Translate section -->
+
+    <!-- This hidden input field must contain the classname of
+         the object you are creating -->
+    <input name="class" type="hidden" value="${request:new_object:classname}"/>
+    <!-- This hidden input field must contain name of the VDF template
+         you wish to have displayed after the form is applied -->
+
+    <table  class="fieldset propstable">
+
+      <if cond="${request:new_object:display_sequence_enabled}">
+
+        <iter ref="request:new_object:display_sequence" item="obj">
+          <if cond="$:name=='expire' and $:is_read_only=='false'">
+            <insert ref=":html_edit_value(want_menus='true')"/>
+            <elif cond="$:is_read_only=='false'">
+              <insert ref=":html_edit_value(formName='ApplyAdd')"/>
+            </elif>
+            <elif cond="$:is_read_only=='true' and $:is_system=='false'"> <!-- we can't edit read-only, system properties -->
+              <insert ref=":html_edit_value(formName='ApplyAdd')"/>
+            </elif>
+          </if>
+        </iter>
+        
+        <else>
+
+          <with ref="request:new_object">
+            <insert ref=":title:html_edit_value"/>
+            <insert ref=":summary:html_edit_value"/>
+            <insert ref=":description:html_edit_value(class='ckeditor')"/>
+            <insert ref=":expire:html_edit_value( want_menus='true' )"/>
+            <iter ref=":props(exclude_props='title+summary+description+expire')">
+              <if cond="$:is_read_only=='false'">
+                <if cond="$:is_system=='true' and $:is_required=='true'">
+                  <insert ref=":html_edit_value( formName='ApplyAdd' )"/>
+                  <elif cond="$:is_system=='false'">
+                    <insert ref=":html_edit_value( formName='ApplyAdd' )"/>
+                  </elif>
+                </if>
+              <elif cond="$:is_system=='false'"> <!-- we can't edit read-only, system properties -->
+                <insert ref=":html_edit_value(formName='ApplyAdd')"/>
+              </elif>
+              </if>
+            </iter>
+            <!--
+                <iter ref=":props(scope='custom')">
+                <if cond="$:is_read_only=='false'">                 
+                <insert ref=":html_edit_value( formName='ApplyAdd' )"/>
+                </if>
+                </iter>
+            -->                 
+          </with>
+
+        </else>
+      </if>             
+      <insert ref="viewdef:dslib:initial_permissions_no_table"/>
+
+      
+    </table>
+	<insert ref="local:endForm"/>
+  </define>
+
+  <define id="Calendar">
+    <!-- Adding a Calendar requires write access. TODO: See if there is a storage API to determine this. -->
+    <viewdef assert="write_content_access" />
+    
+    <!-- DO NOT TRANSLATE the following section -->
+    <insert ref="request:html:begin_form(action='ApplyAdd',name='ApplyAdd',validate='on',required='all',classname='${request:new_object:classname}',handle='${request:handle}')"/>
+    <!-- END Do Not Translate section -->
+    
+    <!-- This hidden input field must contain the typename of
+         the object you are creating -->
+    <input name="class" type="hidden" value="${request:new_object:classname}"/>
+    <!-- This hidden input field must contain name of the VDF template
+         you wish to have displayed after the form is applied -->
+    
+    <table class="fieldset propstable">
+
+      <if cond="${request:new_object:display_sequence_enabled}">
+
+        <iter ref="request:new_object:display_sequence" item="obj">
+          <if cond="$:is_read_only=='false'">
+            <insert ref=":html_edit_value(formName='ApplyAdd')"/>
+          <elif cond="$:is_system=='false'"> <!-- we can't edit read-only, system properties -->
+            <insert ref=":html_edit_value(formName='ApplyAdd')"/>
+          </elif>
+          </if>
+        </iter>
+        
+        <else>
+
+          <with ref="request:new_object">
+            <insert ref=":title:html_edit_value"/>
+            <insert ref=":summary:html_edit_value"/>
+            <insert ref=":description:html_edit_value(class='ckeditor')"/>
+            <insert ref=":keywords:html_edit_value"/>
+            <insert ref=":default_scale:html_edit_value"/>
+            <iter ref=":props(exclude_props='title+summary+description+keywords+default_scale')">
+              <if cond="$:is_read_only=='false'">
+                <if cond="$:is_system=='true' and $:is_required=='true'">
+                  <insert ref=":html_edit_value( formName='ApplyAdd' )"/>
+                  <elif cond="$:is_system=='false'">
+                    <insert ref=":html_edit_value( formName='ApplyAdd' )"/>
+                  </elif>
+                </if>
+              <elif cond="$:is_system=='false'"> <!-- we can't edit read-only, system properties -->
+                <insert ref=":html_edit_value(formName='ApplyAdd')"/>
+              </elif>
+              </if>
+            </iter>
+            <!--
+                <iter ref=":props(scope='custom')">
+                <if cond="$:is_read_only=='false'">
+                <insert ref=":html_edit_value( formName='ApplyAdd' )"/>
+                </if>
+                </iter>
+            -->                 
+          </with>
+
+        </else>
+      </if>             
+      <insert ref="viewdef:dslib:initial_permissions_no_table"/>
+
+      
+    </table>
+	<insert ref="local:endForm"/>
+  </define>
+
+  <define id="operate_for_savedQuery"><if cond="${request:get_cmd_arg(argname='operation')}==''"><insert ref="viewdef:AddGenericLibMessages:any"/><else><insert ref="request:get_cmd_arg(argname='operation')"/></else></if></define>
+  <define id="handle_for_savedQuery"><if cond="${local:operate_for_savedQuery}!='User'"><if cond="${request:get_cmd_arg(argname='handle')}!=''"><insert ref="request:get_cmd_arg(argname='handle')"/><else>Site</else></if><else>Site</else></if></define>
+  <!-- needed for frame... <define id="command"><insert ref="local:cgi"/>AddSavedQueryLib</define> -->
+  
+  <define id="SavedQuery">
+    <!-- Adding a SavedQuery requires write access. TODO: See if there is a storage API to determine this. -->
+    <viewdef assert="write_content_access" />
+    <!-- DO NOT TRANSLATE the following section -->
+    <insert ref="request:html:begin_form(action='ApplySaveNewQuery',name='ApplySaveNewQuery',validate='on',required='all',exclude_props='query_string',classname='${request:new_object:classname}',handle='${request:handle}')"/>
+    <!-- END Do Not Translate section -->
+
+    <!-- This hidden input field must contain the typename of
+         the object you are creating -->
+    <input name="class" type="hidden" value="${request:new_object:classname}"/>
+    <!-- This hidden input field must contain name of the VDF template
+         you wish to have displayed after the form is applied -->
+    
+    <!-- Standard Properties -->
+    <table class="fieldset propstable"> 
+
+      <if cond="${request:new_object:display_sequence_enabled}">
+
+        <iter ref="request:new_object:display_sequence" item="obj">
+          <if cond="$:is_read_only=='false'">
+            <insert ref=":html_edit_value(formName='ApplySaveNewQuery')"/>
+          <elif cond="$:is_system=='false'"> <!-- we can't edit read-only, system properties -->
+            <insert ref=":html_edit_value(formName='ApplySaveNewQuery')"/>
+          </elif>
+          </if>
+        </iter>
+
+        <else>
+
+          <insert ref="request:new_object:title:html_edit_value"/>
+          <insert ref="request:new_object:summary:html_edit_value"/>
+          <insert ref="request:new_object:description:html_edit_value(class='ckeditor')"/>
+          <insert ref="request:new_object:keywords:html_edit_value"/>
+          <iter ref="request:new_object:props(exclude_props='title+summary+description+keywords')">
+            <if cond="$:is_read_only=='false'">
+              <if cond="$:is_system=='true' and $:is_required=='true'">
+                <insert ref=":html_edit_value( formName='ApplySaveNewQuery' )"/>
+                <elif cond="$:is_system=='false'">
+                  <insert ref=":html_edit_value( formName='ApplySaveNewQuery' )"/>
+                </elif>
+              </if>
+            <elif cond="$:is_system=='false'"> <!-- we can't edit read-only, system properties -->
+              <insert ref=":html_edit_value(formName='ApplySaveNewQuery')"/>
+            </elif>
+            </if>
+          </iter>
+          <!--
+              <iter ref="request:new_object:props(scope='custom')">
+              <if cond="$:is_read_only=='false'">
+              <insert ref=":html_edit_value( formName='ApplySaveNewQuery' )"/>
+              </if>
+              </iter>
+          -->        
+        </else>
+      </if>             
+      <insert ref="viewdef:dslib:initial_permissions_no_table"/>
+
+    </table>
+    <br/><br/>
+
+    <!-- Search Form WITH A FRAME -->
+
+
+    <!-- Search Form 'in-line' -->
+
+    <!-- This hidden input field is required *BEFORE* AddSavedQueryLib to override redirection to SearchResults.vdf -->
+    <input type="hidden" name="vdf_results" value="Services"/>
+    
+    <insert ref="viewdef:AddSavedQueryLib"/>
+
+    <!-- End Search Form -->
+
+    
+    <insert ref="local:submitButton"/>
+    
+    <insert ref="request:html:end_form"/>
+
+  </define>
+
+  <define id="submitButton">
+    <insert ref="viewdef:uilib:submitButtonInTable(name='Apply', label='${viewdef:AddGenericLibMessages:apply}')"/>
+  </define>
+  
+  <define id="landingPageSelection">
+    <!-- The display of the following section is DISABLED by default.
+         Delete "display: none" to enable landing page selection. -->
+    <div style="text-align:center;margin:10px; display:none">
+      <p>
+        <insert ref="viewdef:AddGenericLibMessages:afterAdding" /><br/>
+        <if cond="${request:is_type_of( classname=${request:get_cmd_arg(argname='classname')}, base_class='Document')} 
+                  and ${request:is_type_of( classname=${request:object:classname}, base_class='Bulletin' )}">
+          <input name="vdf_results" type="radio" value="View/${request:getQueryStringParameter(name='BulletinBoard', default=${request:object:handle})}?init=true" checked="checked"/> <insert ref="viewdef:AddGenericLibMessages:thisBulletinBoard" />
+          <elif cond="${request:is_type_of( classname=${request:get_cmd_arg(argname='classname')}, base_class='BulletinBoard' )}">
+              <input name="vdf_results" type="radio" value="View/${request:object:handle}?init=true" checked="checked"/> <insert ref="request:object:title"/>
+              
+              <input name="vdf_results" type="radio" value="View"/> <insert ref="viewdef:AddGenericLibMessages:new" /> <insert ref="request:new_object:view_classname"/>
+          </elif>
+          <else>
+            <if cond="${request:is_type_of( classname=${request:get_cmd_arg(argname='classname')}, base_class='Collection' )}
+                      or ${request:is_type_of( classname=${request:get_cmd_arg(argname='classname')}, base_class='Workspace' )}
+                      or ${request:is_type_of( classname=${request:get_cmd_arg(argname='classname')}, base_class='Calendar' )}
+                      or ${request:is_type_of( classname=${request:get_cmd_arg(argname='classname')}, base_class='Weblog' )}
+                      or ${request:is_type_of( classname=${request:get_cmd_arg(argname='classname')}, base_class='Wiki' )}
+                      or ${request:is_type_of( classname=${request:get_cmd_arg(argname='classname')}, base_class='WikiPage' )}">
+              <input name="vdf_results" type="radio" value="View/${request:object:handle}" checked="checked"/> <insert ref="request:object:title"/>
+              
+              <input name="vdf_results" type="radio" value="View"/> <insert ref="viewdef:AddGenericLibMessages:new" /> <insert ref="request:new_object:view_classname"/>
+              <else>
+                <input name="vdf_results" type="radio" value="View/${request:object:handle}" checked="checked"/> <insert ref="request:object:title"/> (View/<insert ref="request:object:handle" />)
+              </else>
+            </if>
+          </else>
+        </if>
+        
+        <input name="vdf_results" type="radio" value="Services"/> <insert ref="viewdef:AddGenericLibMessages:propertiesPage(classname=${request:new_object:view_classname})" />
+      </p>
+    </div>
+  </define>
+  
+  <define id="endForm">
+    <insert ref="local:landingPageSelection"/>
+    
+    <insert ref="local:submitButton"/>
+    
+    <insert ref="request:html:end_form"/>
+  </define>
+  
+
+  
+  <if cond="${request:is_type_of( classname=${request:get_cmd_arg(argname='classname')}, base_class='Event' )}">
+    <insert ref="local:Event"/>
+    <elif cond="${request:is_type_of( classname=${request:get_cmd_arg(argname='classname')}, base_class='Bulletin' )}">
+      <insert ref="local:Bulletin"/>
+    </elif>
+    <elif cond="${request:is_type_of( classname=${request:get_cmd_arg(argname='classname')}, base_class='Subscription' )}">
+      <insert ref="local:Subscriptions"/>
+    </elif>
+    <elif cond="${request:is_type_of( classname=${request:get_cmd_arg(argname='classname')}, base_class='Collection' )}">
+      <insert ref="local:Collection"/>
+    </elif>
+    <elif cond="${request:is_type_of( classname=${request:get_cmd_arg(argname='classname')}, base_class='Document' )}">
+      <insert ref="local:Document"/>
+    </elif>
+    <elif cond="${request:is_type_of( classname=${request:get_cmd_arg(argname='classname')}, base_class='Version' )}">
+      <insert ref="local:Version"/>
+    </elif>
+    <elif cond="${request:is_type_of( classname=${request:get_cmd_arg(argname='classname')}, base_class='URL' )}">
+      <insert ref="local:URL"/>
+    </elif>
+    <elif cond="${request:is_type_of( classname=${request:get_cmd_arg(argname='classname')}, base_class='BulletinBoard' )}">
+      <insert ref="local:BulletinBoard"/>
+    </elif>
+    <elif cond="${request:is_type_of( classname=${request:get_cmd_arg(argname='classname')}, base_class='Calendar' )}">
+      <insert ref="local:Calendar"/>
+    </elif>
+    <elif cond="${request:is_type_of( classname=${request:get_cmd_arg(argname='classname')}, base_class='SavedQuery' )}">
+      <insert ref="local:SavedQuery"/>
+    </elif>
+    <elif cond="${request:is_type_of( classname=${request:get_cmd_arg(argname='classname')}, base_class='WeblogEntry' )}">
+      <insert ref="local:AddXMLGeneric"/>
+    </elif>
+    <elif cond="${request:is_type_of( classname=${request:get_cmd_arg(argname='classname')}, base_class='Weblog' )}">
+      <insert ref="local:AddXMLGeneric"/>
+    </elif>
+    <elif cond="${request:is_type_of( classname=${request:get_cmd_arg(argname='classname')}, base_class='Wiki' )}">
+      <insert ref="local:AddXMLGeneric"/>
+    </elif>
+    <elif cond="${request:is_type_of( classname=${request:get_cmd_arg(argname='classname')}, base_class='WikiPage' )}">
+      <insert ref="local:AddXMLGeneric"/>
+    </elif>
+    <else>
+      <!-- Consider migrating anything that falls in here to AddXMLGeneric instead -->
+      <insert ref="local:Generic"/>
+    </else>
+  </if>
+
+</viewdef>
