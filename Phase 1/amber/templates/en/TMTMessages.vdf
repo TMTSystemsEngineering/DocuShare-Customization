@@ -1,0 +1,21 @@
+<?xml version="1.0" ?>
+<!DOCTYPE  viewdef [
+<!ENTITY nbsp   "&#160;"> <!-- no-break space = non-breaking space U+00A0 ISOnum -->
+<!ENTITY copy   "&#169;"> <!-- copyright sign, U+00A9 ISOnum -->
+]>
+
+<!-- Copyright (c) 2018 Thirty Meter Telescope.  All Rights Reserved.
+Copyright protection claimed includes all forms and matters of copyrightable material 
+and information now allowed by statutory or judicial law or herein after granted. -->
+
+<viewdef>
+  <define id="clickToViewDCNs">Click to view document control numbers</define>
+  <define id="MyDCNs">My DCNs</define>
+  <define id="clickToIssueDCN">Click to issue a new document control number</define>
+  <define id="IssueDCN">Issue DCN</define>
+  <define id="clickToManageDCNs">Click to manage document control numbers</define>
+  <define id="ManageDCNs">Manage DCNs</define>
+  <define id="clickToAddDocument">Click to add document with document control number</define>
+  <define id="AddDocument">Add Document</define>
+  <define id="FindCollection_ph">Find Collection</define>
+</viewdef>
