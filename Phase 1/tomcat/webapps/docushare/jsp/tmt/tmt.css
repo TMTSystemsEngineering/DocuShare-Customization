@@ -1,0 +1,44 @@
+.tmt {
+	background-color:#e0e3e8;
+	color: #7882a4;
+	font-size: 12.8px;
+}
+.tmtred {
+	background-color:#e0e3e8;
+	color: #1c7bd0;
+	text-decoration: underline dotted;
+	font-size: 12.8px;
+}
+.tmttitle {
+	font-weight: bold;
+	font-size: 16px;
+}
+.selected {
+	FONT: bold 8pt Verdana, Arial, Helvetica, sans-serif; 
+	color: black;
+}
+.dialogborder {
+	background-color: #e6e6e6;
+}
+
+a.headerlinks:link{font-weight:normal;font-size:12.8px; color:#7882a4;text-decoration:none;filter:progid:DXImageTransform.Microsoft.Shadow(color=#e0e3e8,direction=135,strength=2);}
+a.headerlinks:visited{font-weight:normal;font-size:12.8px; color:#7882a4;text-decoration:none;filter:progid:DXImageTransform.Microsoft.Shadow(color=#e0e3e8,direction=135,strength=2);}
+a.headerlinks:hover{font-weight:normal;font-size:12.8px; color:#7882a4;text-decoration:underline;filter:progid:DXImageTransform.Microsoft.Shadow(color=#e0e3e8,direction=135,strength=2);}
+a.headerlinks:hover, visited{font-weight:normal;font-size:12.8px; color:#7882a4;text-decoration:underline;filter:progid:DXImageTransform.Microsoft.Shadow(color=#e0e3e8,direction=135,strength=2);}
+a.headerlinks:active{font-weight:normal;font-size:12.8px; color:#7882a4;text-decoration:none;filter:filter:progid:DXImageTransform.Microsoft.Shadow(color=#e0e3e8,direction=135,strength=2);} 
+a.headerlinks:hover, active{font-weight:normal;font-size:12.8px; color:#7882a4;text-decoration:underline;filter:progid:DXImageTransform.Microsoft.Shadow(color=#e0e3e8,direction=135,strength=2);}
+
+/*
+#header h1 {
+    position: absolute;
+    width: 400px;
+    height: 49px;
+    top: 14px;
+    left: 30px;
+    background: url(/docushare/jsp/tmt/palomar.jpg) no-repeat 0% 0%;
+}
+#header h1 a {
+    width: 400px;
+    height: 49px;
+}
+*/
