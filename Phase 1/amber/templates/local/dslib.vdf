@@ -3470,11 +3470,13 @@
     </if>
     <!-- EA: end condition portalType != 'sharepointWP' -->
     <script language="javascript" type="text/javascript" defer="defer">
-    document.querySelector("#TMT_find_collection").addEventListener("keyup", event => {
-        if(event.key !== "Enter") return;
-        document.querySelector("#TMT_find_collection_button").click();
-        event.preventDefault(); // No need to `return false;`.
-    });
+    function checkCollKey(event)
+    {
+         if(event.key !== "Enter") return;
+         document.querySelector("#TMT_find_collection_button").click();
+         event.preventDefault(); // No need to `return false;`.
+    }
+    document.querySelector("#TMT_find_collection").addEventListener("keydown", checkCollKey);
     </script>
     <script language="javascript" type="text/javascript">
 	function redirect(inpt)
@@ -3496,12 +3498,13 @@
 		{
 		    inpt.form.action = "/docushare/dsweb/View/Collection-"+collection_number;
 		}
+	        inpt.form.submit();
 	    }
 	    else if (search_value.length > 0)
 	    {
 		inpt.form.action = "/docushare/dsweb/ApplySimpleSearch";
+	        inpt.form.submit();
 	    }
-	    inpt.form.submit();
 	}
     </script>
   </define>
