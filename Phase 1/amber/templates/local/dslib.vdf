@@ -320,7 +320,7 @@
               </if>
               <!-- Begin TMT Collection Search -->
 	      <br/><input id="TMT_find_collection" type="text" size="20" class="TMT_find_collection" placeholder="${viewdef:TMTMessages:FindCollection_ph}" name="TMT_find_collection" />
-	      <button name="TMT_find_collection_button" class="TMT_find_collection_button" value="TMT_find_collection_button" onclick="redirect(this);"><i class="icon-search" onclick="redirect(this);"><span onclick="redirect(this);"/></i></button>
+	      <button name="TMT_find_collection_button" id="TMT_find_collection_button" class="TMT_find_collection_button" value="TMT_find_collection_button" onclick="redirect(this);"><i class="icon-search" onclick="redirect(this);"><span onclick="redirect(this);"/></i></button>
               <!-- End TMT Collection Search -->
             </div> <!-- end search -->
             
@@ -3469,6 +3469,13 @@
       <insert ref="local:messages_admin" />
     </if>
     <!-- EA: end condition portalType != 'sharepointWP' -->
+    <script language="javascript" type="text/javascript" defer="defer">
+    document.querySelector("#TMT_find_collection").addEventListener("keyup", event => {
+        if(event.key !== "Enter") return;
+        document.querySelector("#TMT_find_collection_button").click();
+        event.preventDefault(); // No need to `return false;`.
+    });
+    </script>
     <script language="javascript" type="text/javascript">
 	function redirect(inpt)
 	{
