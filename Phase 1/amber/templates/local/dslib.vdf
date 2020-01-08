@@ -253,18 +253,24 @@
                 <if cond="${request:category}=='HomePage' and ${request:directory:is_user_level(level='imageManager')}">
                   <else>
 
-                    <input type="text" size="26" class="headersearchbox search__input" placeholder="${viewdef:dslibMessages:entireSite_ph}" name="value1"  />
-                    <if cond="${viewdef:dslib:runjs}=='Yes'">
-                       <span title="${viewdef:dslibMessages:clickToHideSearchOpt}" style="display: none;" id="searchOptionsHide" class="search__options is-active icon-settings" onclick="showSearchOptions('search_windowshade'); return(false);">
-                        
-                      </span>
-                      <span style="display: ;" id="searchOptionsShow" title="${viewdef:dslibMessages:clickToShowSearchOpt}" class="search__options icon-settings" onclick="showSearchOptions('search_windowshade'); return(false);">
-                        
-                      </span>
-                    </if>
-                    <input type="hidden" name="SimpleSearch" value="SimpleSearch" />
-                    <input hidden="hidden" type="submit" value="${viewdef:dslibMessages:search}" name="SearchButton" style="display:none" />
-                    <button name="SearchButton" class="search__submit" value="${viewdef:dslibMessages:search}"><i class="icon-search"><span/></i></button>
+		    <div>
+                      <input type="text" size="26" class="headersearchbox search__input" placeholder="${viewdef:dslibMessages:entireSite_ph}" name="value1"  />
+                      <if cond="${viewdef:dslib:runjs}=='Yes'">
+                         <span title="${viewdef:dslibMessages:clickToHideSearchOpt}" style="display: none;" id="searchOptionsHide" class="search__options is-active icon-settings" onclick="showSearchOptions('search_windowshade'); return(false);">
+                          
+                        </span>
+                        <span style="display: ;" id="searchOptionsShow" title="${viewdef:dslibMessages:clickToShowSearchOpt}" class="search__options icon-settings" onclick="showSearchOptions('search_windowshade'); return(false);">
+                          
+                        </span>
+                      </if>
+                        <input type="hidden" name="SimpleSearch" value="SimpleSearch" />
+                        <input hidden="hidden" type="submit" value="${viewdef:dslibMessages:search}" name="SearchButton" style="display:none" />
+                        <button name="SearchButton" class="search__submit" value="${viewdef:dslibMessages:search}"><i class="icon-search"><span/></i></button>
+		        <!-- Begin TMT Collection Search -->
+		        <input id="TMT_find_collection" type="text" size="20" class="TMT_find_collection" placeholder="${viewdef:TMTMessages:FindCollection_ph}" name="TMT_find_collection" />
+		        <button name="TMT_find_collection_button" id="TMT_find_collection_button" class="TMT_find_collection_button" value="TMT_find_collection_button" onclick="redirect(this);"><i class="icon-search" onclick="redirect(this);"><span onclick="redirect(this);"/></i></button>
+		        <!-- End TMT Collection Search -->
+		    </div>
 
                     <if cond="${request:handle}!='None' and ${request:handle}!='null' and ${request:handle}!='Site' and ${request:handle}!='SearchResults' and ${request:object:is_container}">
                       <!-- begin search insideof -->
@@ -318,10 +324,6 @@
                   </else>
                 </if>
               </if>
-              <!-- Begin TMT Collection Search -->
-	      <br/><input id="TMT_find_collection" type="text" size="20" class="TMT_find_collection" placeholder="${viewdef:TMTMessages:FindCollection_ph}" name="TMT_find_collection" />
-	      <button name="TMT_find_collection_button" id="TMT_find_collection_button" class="TMT_find_collection_button" value="TMT_find_collection_button" onclick="redirect(this);"><i class="icon-search" onclick="redirect(this);"><span onclick="redirect(this);"/></i></button>
-              <!-- End TMT Collection Search -->
             </div> <!-- end search -->
             
             <!-- Advanced Search -->
