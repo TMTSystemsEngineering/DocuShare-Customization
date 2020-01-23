@@ -384,30 +384,6 @@ and information now allowed by statutory or judicial law or herein after granted
                 <elif cond="$prop:is_read_only=='false'">
                   <if cond="${prop:name} == 'description'">
                     <insert ref="request:object:description:html_edit_value(class='ckeditor')"/>
-		    <elif cond="${prop:name} == 'DCN'">
-                      <insert ref="prop:html_edit_value(formName='ApplyProps')"/>
-		      <input name="origDCN" type="hidden" value="${prop:gets}"></input>
-		      <script type="text/javascript">
-		      function DCNchange(){
-			  var fldDCN = document.getElementsByName("DCN")[0];
-			  var fldOrigDCN = document.getElementsByName("origDCN")[0];
-		          var arrOld = fldOrigDCN.value.split(".");
-			  var oldRoot = arrOld[0] + "." + arrOld[1] + "." + arrOld[2] + "." + arrOld[3] + "." + arrOld[4] + ".";
-			  var newRoot = fldDCN.value.substr(0, oldRoot.length);
-			  if (oldRoot != newRoot) {
-			      alert ("DCN value cannot be changed (except for last component)");
-			      fldDCN.value = fldOrigDCN.value;
-			  }
-		      };
-		      var fldDCN = document.getElementsByName("DCN")[0];
-		      fldDCN.onchange = DCNchange;
-		      </script>
-			<!--
-			<tr><td align='right' valign='top'><label><a class='fieldname labelHelpLink' title="Help" href="/docushare/dsweb/PropHelp/Document.DCN">Document Control Number:</a></label><br/><small>(required)</small></td>
-			<td><input name="DCN" type="text" size="60" required="required" maxlength="80" value="${prop:gets}" tabindex="1"></input>
-			</td>
-			</tr>-->
-		    </elif>
                     <else>
                       <insert ref="prop:html_edit_value(formName='ApplyProps')"/>
                     </else>

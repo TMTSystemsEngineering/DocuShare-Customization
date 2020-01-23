@@ -29,14 +29,20 @@ String jspFile = "index.jsp";
     Statement pstmt = null;
     ResultSet rs = null;
 
-	String sort = "";
-	if(request.getParameter("sort") != null && request.getParameter("sort").trim().length() > 0)
-		sort = request.getParameter("sort").trim();
+    String sort = "";
+    if(request.getParameter("sort") != null && request.getParameter("sort").trim().length() > 0)
+	sort = request.getParameter("sort").trim();
 
-	if(request.getParameter("action") != null && request.getParameter("action").trim().equals("purge"))
+    if(request.getParameter("action") != null && request.getParameter("action").trim().equals("purge"))
+    {
+	String dcni = request.getParameter("dcni");
+	if (dcni != null && dcni.trim().length() > 0)
 	{
-		if(request.getParameter("dcn") != null)
-			com.waterware.db.DBServices.executeUpdate("delete from tmt_dcn_issued where id = "+request.getParameter("dcn"));
+	    dcni = "" + (Integer.parseInt(dcni)); // use parseInt() to shield from SQL injection
+	}
+
+	if (dcni != null)
+	    com.waterware.db.DBServices.executeUpdate("delete from tmt_dcn_issued where id = " + dcni);
     }
 %>
 

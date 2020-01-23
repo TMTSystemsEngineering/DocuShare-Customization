@@ -4709,7 +4709,7 @@ tr.cal_subtable .summarytext p {
   height: 28px;
   top: 39px;
   left: 21px;
-  background: url(images/branding_docushare.png) no-repeat 0 0;
+  background: url(images/branding_docushare.gif) no-repeat 0 0;
   text-indent: -9999px;
 }
 .header_admin #header_inner h1 a, #adminsection #header #header_inner h1 a {
@@ -5406,7 +5406,7 @@ tr.cal_subtable .summarytext p {
   padding-top: 15px;
 }
 .fieldset span.selectboxit-container {
-  max-width: 450px;
+  max-width: 300px;
 }
 .fieldset .input, .fieldset .textarea, .fieldset .datepicker, .fieldset .loginform .loginform__username input, .loginform .loginform__username .fieldset input, .fieldset .loginform .loginform__password input, .loginform .loginform__password .fieldset input, .fieldset .loginform .loginform__domainselect input, .loginform .loginform__domainselect .fieldset input, .fieldset input[type=text], .fieldset input[type=password], .fieldset .fcr__inputwrap input, .fcr__inputwrap .fieldset input, .fieldset .detailedsearch-group input[type="text"], .detailedsearch-group .fieldset input[type="text"], .fieldset .ui-dialog.dialog--upload input[type='text'], .ui-dialog.dialog--upload .fieldset input[type='text'] {
   vertical-align: middle;
@@ -5415,7 +5415,7 @@ tr.cal_subtable .summarytext p {
 .fieldset input[type=text], .fieldset input[type=password] {
   vertical-align: middle;
   display: inline-block;
-  max-width: 450px;
+  max-width: 300px;
 }
 .fieldset input.width-50 {
   max-width: 150px;

@@ -34,7 +34,7 @@
 	{
 	    try
     	{
-	       String query = "select * from tmt_dcn_issued where id = "+dcni;
+	       String query = "select * from tmt_dcn_issued where id = " + Integer.parseInt(dcni); // use parseInt() to shield from SQL injection;
     	   con = com.waterware.db.DBServices.getConnection();
 	       pstmt = con.createStatement();
     	   rs = pstmt.executeQuery(query);

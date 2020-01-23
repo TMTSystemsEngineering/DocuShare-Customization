@@ -141,40 +141,9 @@
       </if>
     </if>
 
-    <!-- Begin TMT stylesheet items -->
-    <style type="text/css">
-      .TMT_find_collection_button {
-	position: absolute;
-	left: 168px;
-	top: 32px;
-	width: 33px;
-	height: 32px;
-	background: #247ACB;
-	cursor: pointer;
-	border: 1px solid #247ACB;
-	text-align: center;
-	padding: 0;
-	-webkit-box-sizing: border-box;
-	-moz-box-sizing: border-box;
-	box-sizing: border-box;
-      }
-      .TMT_find_collection_button i {
-        color: #FFF;
-	font-size: 16px;
-	vertical-align: middle;
-	line-height: 12px;
-      } 
-      .TMT_find_collection {
-	padding-left: 16px;
-	box-sizing: border-box;
-	height: 32px;
-      }
-    </style>
-    <!-- End TMT stylesheet items -->
+  </define>
 
-</define>
-
-<define id="head_include_customstyle">
+  <define id="head_include_customstyle">
     <if cond="${viewdef:dslib:runjs}=='Yes'">
       <insert ref="viewdef:javascript:popups_replacement_scripts_and_styles"/>
 
@@ -252,7 +221,6 @@
                 <if cond="${request:category}=='HomePage' and ${request:directory:is_user_level(level='imageManager')}">
                   <else>
 
-				<div>
                     <input type="text" size="26" class="headersearchbox search__input" placeholder="${viewdef:dslibMessages:entireSite_ph}" name="value1"  />
                     <if cond="${viewdef:dslib:runjs}=='Yes'">
                        <span title="${viewdef:dslibMessages:clickToHideSearchOpt}" style="display: none;" id="searchOptionsHide" class="search__options is-active icon-settings" onclick="showSearchOptions('search_windowshade'); return(false);">
@@ -265,11 +233,6 @@
                     <input type="hidden" name="SimpleSearch" value="SimpleSearch" />
                     <input hidden="hidden" type="submit" value="${viewdef:dslibMessages:search}" name="SearchButton" style="display:none" />
                     <button name="SearchButton" class="search__submit" value="${viewdef:dslibMessages:search}"><i class="icon-search"><span/></i></button>
-		        <!-- Begin TMT Collection Search -->
-		        <input id="TMT_find_collection" type="text" size="20" class="TMT_find_collection" placeholder="${viewdef:TMTMessages:FindCollection_ph}" name="TMT_find_collection" />
-		        <button name="TMT_find_collection_button" id="TMT_find_collection_button" class="TMT_find_collection_button" value="TMT_find_collection_button" onclick="redirect(this);"><i class="icon-search" onclick="redirect(this);"><span onclick="redirect(this);"/></i></button>
-		        <!-- End TMT Collection Search -->
-				</div>
 
                     <if cond="${request:handle}!='None' and ${request:handle}!='null' and ${request:handle}!='Site' and ${request:handle}!='SearchResults' and ${request:object:is_container}">
                       <!-- begin search insideof -->
@@ -613,25 +576,6 @@
             </if>
 
             <li><a href="${request:config:cmd_base}helpdesk"><insert ref="viewdef:dslibMessages:help" /></a></li> -->
-
-	    <!-- Begin TMT DCN -->
-            <if cond=" ${request:directory:is_logged_in_user} and ${request:isValidUser}">
-			<if cond="${request:directory:is_admin}">
-		    <li class="nav__right">
-		      <a href="${request:config:abs_path}jsp/tmt/index_admin.jsp" title="${viewdef:TMTMessages:clickToManageDCNs}"><i class="icon-properties">&nbsp;</i><insert ref="viewdef:TMTMessages:ManageDCNs" /></a>
-		    </li>
-			</if>
-	        <li class="nav__right">
-                  <a href="${request:config:abs_path}jsp/tmt/addDocument.jsp" title="${viewdef:TMTMessages:clickToAddDocument}"><i class="icon-upload">&nbsp;</i><insert ref="viewdef:TMTMessages:AddDocument" /></a>
-			</li>
-	        <li class="nav__right">
-                  <a href="${request:config:abs_path}jsp/tmt/IssueDCN.jsp" title="${viewdef:TMTMessages:clickToIssueDCN}" target="_blank"><i class="icon-copyshortcuts">&nbsp;</i><insert ref="viewdef:TMTMessages:IssueDCN" /></a>
-			</li>
-	        <li class="nav__right">
-                  <a href="${request:config:abs_path}jsp/tmt/index.jsp" title="${viewdef:TMTMessages:clickToViewDCNs}"><i class="icon-tasks">&nbsp;</i><insert ref="viewdef:TMTMessages:MyDCNs" /></a>
-			</li>
-            </if>
-	    <!-- End TMT DCN -->
             <if cond=" ${request:directory:is_logged_in_user} and ${request:isValidUser}">
             <li class="nav__right">
               <!-- Background Jobs Status Bar -->
@@ -1162,26 +1106,6 @@
         </if>
         
         <li><a href="${request:config:cmd_base}helpdesk"><insert ref="viewdef:dslibMessages:help" /></a></li> -->
-
-	<!-- Begin TMT DCN -->
-	<if cond=" ${request:directory:is_logged_in_user} and ${request:isValidUser}">
-	    <if cond="${request:directory:is_admin}">
-		<li class="nav__right">
-		  <a href="${request:config:cmd_base}ManageDCNs" title="${viewdef:TMTMessages:clickToManageDCNs}"><i class="icon-properties">&nbsp;</i><insert ref="viewdef:TMTMessages:ManageDCNs" /></a>
-		</li>
-	    </if>
-	    <li class="nav__right">
-	      <a href="${request:config:cmd_base}AddDocWithDCN" title="${viewdef:TMTMessages:clickToAddDocument}"><i class="icon-upload">&nbsp;</i><insert ref="viewdef:TMTMessages:AddDocument" /></a>
-	    </li>
-	    <li class="nav__right">
-	      <a href="${request:config:cmd_base}IssueDCN" title="${viewdef:TMTMessages:clickToIssueDCN}"><i class="icon-copyshortcuts">&nbsp;</i><insert ref="viewdef:TMTMessages:IssueDCN" /></a>
-	    </li>
-	    <li class="nav__right">
-	      <a href="${request:config:cmd_base}ViewDCNs" title="${viewdef:TMTMessages:clickToViewDCNs}"><i class="icon-tasks">&nbsp;</i><insert ref="viewdef:TMTMessages:MyDCNs" /></a>
-	    </li>
-	</if>
-	<!-- End TMT DCN -->
-
         <li class="nav__right">
           <!-- Background Jobs Status Bar -->
           <with name="backgroundJobCount" ref="request:user_obj:backgoundJobCount">
@@ -2659,29 +2583,12 @@
       <if cond="$object:is_new">
         <span class="new-item" title="${viewdef:dslibMessages:new}"><insert ref="viewdef:dslibMessages:new"/></span>
       </if>
-<!-- Begin RKent modification 2018-09-07 -->
       <if cond="not ${object:is_type_of( classname='Bulletin' )}">
         <if cond="${object:summary:gets}!=''">
-            <if cond="${object:is_type_of( classname='Document' )} and ${object:DCN:gets}!=''">
-		<p property="dc:description">
-                    <insert ref="request:xss_safe_value(value=$object:DCN)" /><br/>
-		    <insert ref="request:xss_safe_value(value=$object:summary)"/>
-		</p>
-	        <else>
-		    <p property="dc:description">
-			<insert ref="request:xss_safe_value(value=$object:summary)"/>
-		    </p>
-		</else>
-            </if>
-	    <else>
-                <if cond="${object:is_type_of( classname='Document' )} and ${object:DCN:gets}!=''">
-		    <p property="dc:description">
-			<insert ref="request:xss_safe_value(value=$object:DCN)" />
-		    </p>
-		</if>
-	    </else>
+            <p property="dc:description">
+                <insert ref="request:xss_safe_value(value=$object:summary)"/>
+            </p>
         </if>
-<!-- End RKent modification 2018-09-07 -->
         <else>
           <if cond="${object:get_description}!=''">
               <p property="dc:description">
@@ -3421,46 +3328,6 @@
       <insert ref="local:messages_admin" />
     </if>
     <!-- EA: end condition portalType != 'sharepointWP' -->
-	<!-- Begin TMT Find Collection -->
-    <script language="javascript" type="text/javascript" defer="defer">
-    function checkCollKey(event)
-    {
-         if(event.key !== "Enter") return;
-         document.querySelector("#TMT_find_collection_button").click();
-         event.preventDefault(); // No need to `return false;`.
-    }
-    document.querySelector("#TMT_find_collection").addEventListener("keydown", checkCollKey);
-    </script>
-    <script language="javascript" type="text/javascript">
-	function redirect(inpt)
-	{
-	    var collection_number = inpt.form.TMT_find_collection.value;
-	    var search_value = inpt.form.value1.value;
-
-	    if (collection_number.length > 0)
-	    {
-		if (collection_number.indexOf("-") > 0) /* looks like "Collection-123" or "Document-567" */
-		{
-		    inpt.form.action = "/docushare/dsweb/View/" + collection_number;
-		}
-		else if (collection_number.charAt(0) == 'c' || collection_number.charAt(0) == 'C')
-		{
-		   inpt.form.action = "/docushare/dsweb/View/Collection-" + collection_number.substring(1,collection_number.length);
-		}
-		else
-		{
-		    inpt.form.action = "/docushare/dsweb/View/Collection-"+collection_number;
-		}
-	        inpt.form.submit();
-	    }
-	    else if (search_value.length > 0)
-	    {
-		inpt.form.action = "/docushare/dsweb/ApplySimpleSearch";
-	        inpt.form.submit();
-	    }
-	}
-    </script>
-	<!-- End TMT Find Collection -->
   </define>
 
   <!-- This copyright element may be modified to customize your site

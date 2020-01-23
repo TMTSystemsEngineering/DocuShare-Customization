@@ -29,38 +29,40 @@ String jspFile = "index_admin.jsp";
 <%@ include file="docushare_header.jsp" %>
 
 <%
-	String dcni = null;
-
     Connection con = null;
     Statement pstmt = null;
     ResultSet rs = null;
 
-	String sort = "";
-	if(request.getParameter("sort") != null && request.getParameter("sort").trim().length() > 0)
-		sort = request.getParameter("sort").trim();
-	if(request.getParameter("action") != null && request.getParameter("action").trim().equals("purge"))
-	{
-		if(request.getParameter("dcni") != null)
-			com.waterware.db.DBServices.executeUpdate("delete from tmt_dcn_issued where id = "+request.getParameter("dcni"));
+    String dcni = request.getParameter("dcni");
+    if (dcni != null && dcni.trim().length() > 0)
+    {
+        dcni = "" + (Integer.parseInt(dcni)); // use parseInt() to shield from SQL injection
+    }
+    String sort = "";
+    if(request.getParameter("sort") != null && request.getParameter("sort").trim().length() > 0)
+	sort = request.getParameter("sort").trim();
+    if(request.getParameter("action") != null && request.getParameter("action").trim().equals("purge"))
+    {
+	if(dcni != null)
+	    com.waterware.db.DBServices.executeUpdate("delete from tmt_dcn_issued where id = "+dcni);
     }
 
-	if(request.getParameter("action") != null && request.getParameter("action").trim().equals("DeleteDocument"))
-	{
-		if(request.getParameter("dcni") != null)
+    if(request.getParameter("action") != null && request.getParameter("action").trim().equals("DeleteDocument"))
+    {
+	if(dcni != null)
+	    {
+		String docHandle = com.waterware.db.DBServices.getString("select ds_doc_handle from tmt_dcn_issued where id = "+dcni);
+		if(docHandle != null && docHandle.trim().length() > 0)
 		{
-			String id = request.getParameter("dcni");
-			String docHandle = com.waterware.db.DBServices.getString("select ds_doc_handle from tmt_dcn_issued where id = "+id);
-			if(docHandle != null && docHandle.trim().length() > 0)
-			{
-				try
-				{
-					DSObject docObject = dssession.getObject(new DSHandle(docHandle));
-					if(docObject != null)
-						dssession.deleteObject(new DSHandle(docHandle), DSSelectSet.ALL_PROPERTIES);
-				}
-				catch(Exception ex) {ex.getMessage();}
-			}
-			com.waterware.db.DBServices.executeUpdate("delete from tmt_dcn_issued where id = "+id);
+		    try
+		    {
+			DSObject docObject = dssession.getObject(new DSHandle(docHandle));
+			if(docObject != null)
+			    dssession.deleteObject(new DSHandle(docHandle), DSSelectSet.ALL_PROPERTIES);
+		    }
+		    catch(Exception ex) {ex.getMessage();}
+		}
+		com.waterware.db.DBServices.executeUpdate("delete from tmt_dcn_issued where id = "+dcni);
         }
     }
 %>
@@ -107,28 +109,25 @@ String jspFile = "index_admin.jsp";
 <p>
 <TABLE cellSpacing="0" cellPadding="0" width="100%" border="0">
 <TBODY>
-<TR><TD><BR/></TD></TR>
-
-<TR><TD>Click the following button to reindex and update the properties of documents in the database.</TD></TR>
-<TR><TD><BR/></TD></TR>
-<TR>
-	<TD>
-		<form name="IndexForm" method="POST" action="index_admin.jsp" onSubmit="showSpan('index_admin'); return(true);">
-		<span style="display: ;" id="index_admin">
-		<input type=submit name=ReIndex value="Re Index Document Numbers">
+<!--<TR><TD><BR/></TD></TR>-->
+<!--<TR><TD>Click the following button to reindex and update the properties of documents in the database.</TD></TR>-->
+<!--<TR><TD><BR/></TD></TR>-->
+<!--<TR>-->
+<!--	<TD>-->
+<!--		<form name="IndexForm" method="POST" action="index_admin.jsp" onSubmit="showSpan('index_admin'); return(true);">-->
+		<!--<span style="display: ;" id="index_admin">-->
+		<!--<input type=submit name=ReIndex value="Re Index Document Numbers">-->
 		<!-- onclick='javascript:popup("/docushare/jsp/tmt/pickDestinationCollection.jsp"); return false;'-->
-		</span>
-		<br>
-	    <span style="display: none;" id="index_admin">
-		<font class="VariableWidth9"><i>Processing Request...</i></font>
-	    </span>
-		</form>
-	</TD>
-</TR>
-
-<TR><TD><BR/></TD></TR>
-<TR><TD><BR/></TD></TR>
-
+		<!--</span>-->
+<!--		<br>-->
+<!--	    <span style="display: none;" id="index_admin">-->
+<!--		<font class="VariableWidth9"><i>Processing Request...</i></font>-->
+<!--	    </span>-->
+<!--		</form>-->
+<!--	</TD>-->
+<!--</TR>-->
+<!--<TR><TD><BR/></TD></TR>-->
+<!--<TR><TD><BR/></TD></TR>-->
 <TR>
 <TD vAlign="bottom">
   <TABLE cellSpacing="0" cellPadding="0">
@@ -139,7 +138,7 @@ String jspFile = "index_admin.jsp";
           <TBODY>
           <TR>
 			<% if(request.getParameter("pageId") != null && request.getParameter("pageId").trim().equalsIgnoreCase("1")) { %>
-	            <TD width="8" bgcolor="#999999" background="/docushare/NewImage/pop_tab_gray_left.gif"><IMG height="1" src="/docushare/NewImage/spacer.gif" width="8" /></TD>
+	            <TD width="8" bgcolor="#999999" background="/docushare/images/pop_tab_gray_left.gif"><IMG height="1" src="/docushare/images/spacer.gif" width="8" /></TD>
     	        <TD>
         	      <TABLE cellSpacing="0" cellPadding="3" border="0">
             	    <TBODY>
@@ -148,9 +147,9 @@ String jspFile = "index_admin.jsp";
     	            </TBODY>
         	      </TABLE>
             	</TD>
-	            <TD width="8" bgcolor="#999999" background="/docushare/NewImage/pop_tab_gray_right.gif"><IMG height="1" src="/docushare/NewImage/spacer.gif" width="8" /></TD>
+	            <TD width="8" bgcolor="#999999" background="/docushare/images/pop_tab_gray_right.gif"><IMG height="1" src="/docushare/images/spacer.gif" width="8" /></TD>
 
-    	        <TD width="8"  background="/docushare/NewImage/pop_tab_ltgray_left.gif"><IMG height="1" src="/docushare/NewImage/spacer.gif" width="8" /></TD>
+    	        <TD width="8"  background="/docushare/images/pop_tab_ltgray_left.gif"><IMG height="1" src="/docushare/images/spacer.gif" width="8" /></TD>
         	    <TD>
             	  <TABLE cellSpacing="0" cellPadding="3" border="0">
 	                <TBODY>
@@ -159,9 +158,9 @@ String jspFile = "index_admin.jsp";
             	    </TBODY>
 	              </TABLE>
     	        </TD>
-        	    <TD width="8" background="/docushare/NewImage/pop_tab_ltgray_right.gif"><IMG height="1" src="/docushare/NewImage/spacer.gif" width="8" /></TD>
+        	    <TD width="8" background="/docushare/images/pop_tab_ltgray_right.gif"><IMG height="1" src="/docushare/images/spacer.gif" width="8" /></TD>
 			<% } else { %>
-	            <TD width="8" background="/docushare/NewImage/pop_tab_ltgray_left.gif"><IMG height="1" src="/docushare/NewImage/spacer.gif" width="8" /></TD>
+	            <TD width="8" background="/docushare/images/pop_tab_ltgray_left.gif"><IMG height="1" src="/docushare/images/spacer.gif" width="8" /></TD>
     	        <TD>
         	      <TABLE cellSpacing="0" cellPadding="3" border="0">
             	    <TBODY>
@@ -170,9 +169,9 @@ String jspFile = "index_admin.jsp";
     	            </TBODY>
         	      </TABLE>
             	</TD>
-	            <TD width="8" background="/docushare/NewImage/pop_tab_ltgray_right.gif"><IMG height="1" src="/docushare/NewImage/spacer.gif" width="8" /></TD>
+	            <TD width="8" background="/docushare/images/pop_tab_ltgray_right.gif"><IMG height="1" src="/docushare/images/spacer.gif" width="8" /></TD>
 
-    	        <TD width="8"  bgcolor="#999999" background="/docushare/NewImage/pop_tab_gray_left.gif"><IMG height="1" src="/docushare/NewImage/spacer.gif" width="8" /></TD>
+    	        <TD width="8"  bgcolor="#999999" background="/docushare/images/pop_tab_gray_left.gif"><IMG height="1" src="/docushare/images/spacer.gif" width="8" /></TD>
         	    <TD>
             	  <TABLE cellSpacing="0" cellPadding="3" border="0">
                 	<TBODY>
@@ -181,7 +180,7 @@ String jspFile = "index_admin.jsp";
         	        </TBODY>
             	  </TABLE>
 	            </TD>
-    	        <TD width="8" bgcolor="#999999" background="/docushare/NewImage/pop_tab_gray_right.gif"><IMG height="1" src="/docushare/NewImage/spacer.gif" width="8" /></TD>
+    	        <TD width="8" bgcolor="#999999" background="/docushare/images/pop_tab_gray_right.gif"><IMG height="1" src="/docushare/images/spacer.gif" width="8" /></TD>
 			<% } %>
           </TR>
           </TBODY>
@@ -194,7 +193,7 @@ String jspFile = "index_admin.jsp";
 </TR>
 
 <TR>
-<TD class="dialogborder"><IMG height="8" src="/docushare/NewImage/spacer.gif" width="1" /></TD></TR>
+<TD class="dialogborder"><IMG height="8" src="/docushare/images/spacer.gif" width="1" /></TD></TR>
 </TBODY>
 </TABLE>
 

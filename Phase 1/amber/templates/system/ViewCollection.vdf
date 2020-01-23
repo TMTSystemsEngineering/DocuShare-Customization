@@ -1,0 +1,466 @@
+<?xml version="1.0"?>
+<!DOCTYPE  viewdef [
+<!ENTITY nbsp   "&#160;"> <!-- no-break space = non-breaking space U+00A0 ISOnum -->
+<!ENTITY copy   "&#169;"> <!-- copyright sign, U+00A9 ISOnum -->
+]>
+
+<!-- Copyright (c) 1996-2007 Xerox Corporation.  All Rights Reserved.
+Copyright protection claimed includes all forms and matters of copyrightable material
+and information now allowed by statutory or judicial law or herein after granted. -->
+<viewdef type="application/xhtml+xml"
+         url_access="true"
+         doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"
+         doctype-public="-//W3C//DTD XHTML 1.0 Transitional//EN"
+         args="handle, sort_order+"
+   messages="ViewCollectionMessages.vdf">
+
+  <define id="cgi"><insert ref="request:config:cmd_base"/></define>
+  <define id="title"><insert ref="request:object:title"/></define>
+
+  <define id="handle"><insert ref="request:get_cmd_arg(argname='handle')"/></define>
+  <define id="sort_order"><insert ref="request:get_cmd_arg(argname='sort_order')"/></define>
+  <define id="application">Paging</define>
+  <define id="prefAppl">colPreference</define>
+
+  <html xmlns="http://www.w3.org/1999/xhtml" xmlns:dc="http://purl.org/dc/elements/1.1">
+    <head>
+      <insert ref="viewdef:dslib:head_include"/>
+      <title><insert ref="request:html:escape_cdata(astring=${request:object:title:gets_raw})"/></title>
+      <link rel="alternate" type="application/atom+xml" title="Atom" href="${request:config:cmd_base}ApplyListNew/${request:object:handle}?vdf_results=AtomSummary&amp;amp;mediatype=application/xml&amp;amp;days=7&amp;amp;=sort_key0=date" />
+      <insert ref="viewdef:dslib:backgroundStyle" />
+      <insert ref="viewdef:dslib:process_route_handles" />
+    </head>
+    <body>
+      <insert ref="viewdef:uilib:ViewPageHeader(title='${request:object:title}',bc_label='${viewdef:ViewCollectionMessages:location}',bc_current_label='${viewdef:ViewCollectionMessages:listing}')"/>
+
+      <div id="content">
+
+          <div id="addFileProgress">
+            <div class="progress-title">
+              <i class="icon icon-uploading">&nbsp;</i>
+              <insert ref="viewdef:ViewCollectionMessages:uploading" />
+            </div>
+            <div class="progressbar">
+              <div class="progressbar__progress">
+
+              </div>
+            </div>
+            <button class="progressbar__cancel"><insert ref="viewdef:ViewCollectionMessages:cancel" /></button>
+      </div>
+
+        <div class="collection-wrapper">
+      <form id="ToolbarMulti" name="ToolbarMulti" method="post" action="${local:cgi}ProcessMultipleCommand">
+        <input type="hidden" name="application" value="${application}"/>
+
+        <define id="offset"><insert ref="request:paging_value(container='${handle}', appl='${application}', name='offset', default='')"/></define>
+        <define id="page_size"><insert ref="request:paging_value(container='${handle}', appl='${application}', name='page_size', default='')"/></define>
+        <define id="sort"><if cond="${local:sort_order}==''"><insert ref="request:paging_value(container='${handle}', appl='${application}', name='sort', default='')"/><else><insert ref="local:sort_order"/></else></if></define>
+
+        <!-- total will not have a value until after singlePage is called to get all the children -->
+        <define id="total"><insert ref="request:paging_value(container='${handle}', appl='${application}', name='total')"/></define>
+        <insert ref="viewdef:dslib:toolbar_multi_with_pref(valign='top', field='', caller='collection_speed', col_total='$local:total',pref_container='${handle}',pref_appl='${prefAppl}')"/>
+
+              <insert ref="viewdef:PagingToolbar:main(field='')"/>
+
+        <if cond="${request:object:canDo(feature='com.xerox.docushare.viewContent')}">
+          <div id="uploader">
+            <insert ref="local:addDropZonesByDocClass"/>
+            <a id="selectFiles" href="#" style="display:none">[browse]</a>
+
+            <if cond="${local:total}=='0'">
+              <p class="nocontent"><insert ref="viewdef:ViewCollectionMessages:nocontentListMsg" />
+                <if cond="${request:object:canIAdd} and ${request:config:read_only}==0">
+                  <br/><insert ref="viewdef:ViewCollectionMessages:nocontentListMsg_canAdd" />
+                </if>
+              </p>
+            <else>
+                      <div class="table-wrapper">
+                        <table class="table table-collection">
+                            <thead>
+                <tr>
+                    <insert ref="local:header(caller='collection_speed', handle='${handle}')"/>
+                    <col class="col_actions ${viewdef:uilib:nobgstyle}"/>
+                    <col class="col_actions ${viewdef:uilib:nobgstyle}"/>
+                    <col class="col_actions ${viewdef:uilib:nobgstyle}"/>
+                </tr>
+                            </thead>
+                <iter ref="request:object:getPagedChildren(offset='${local:offset}', page_size='${local:page_size}', sort='${local:sort}', application='${application}', select_set='ListSelectSet', links='owner,locked_by,size')">
+                <if cond="$request:preference_obj:isSelectedProps(appl='${prefAppl}',container='${handle}') ">
+                  <insert ref="viewdef:dslib:summarize_speed_selectedProps(object=$:,cgi=${local:cgi},appears_in='no',abstract='no',owner='yes',locked_by='yes',ref='collection_speed', container='${handle}',appl='${prefAppl}')"/>
+                <else>
+                  <insert ref="viewdef:dslib:summarize_speed(object=$:,cgi=${local:cgi},appears_in='no',abstract='no',owner='yes',locked_by='yes',ref='collection_speed')"/>
+                </else>
+                </if>
+                <if cond="${:_last} == 1">
+                  <if cond="${:_sequence} &gt;= 24">
+                                        <insert ref="request:set_request_var(varname = 'bottom_toolbar', varval = '1')" />
+                  </if>
+                </if>
+                </iter>
+                </table>
+            </div>
+
+                      <if cond="${request:get_request_var(varname='bottom_toolbar')} == '1'">
+                        <insert ref="viewdef:dslib:toolbar_multi(valign = 'bottom', field = '2', caller = 'collection_speed')"/>
+                      </if>
+
+                      <insert ref="viewdef:PagingToolbar:main(field='2')"/>
+
+                <input type="hidden" name="total_cbx" value="${local:total}"/>
+            </else>
+            </if>
+
+          </div> <!-- id="uploader" -->
+
+        </if> <!-- request:object:canDo(feature='com.xerox.docushare.viewContent') -->
+
+        <input type="hidden" name="container" value="${handle}"/>
+        <input type="hidden" name="collection" value="${handle}"/>
+        <input type="hidden" name="TheCollection" value="${handle}"/>
+        <input type="hidden" name="vdf_results" value="View/${handle}"/>
+        <input type="hidden" name="nakedness" value="${request:get_cmd_arg(argname='style')}"/>
+        <input type="hidden" name="page" value="View"/>
+        <input type="hidden" name="prefApplication" value="${prefAppl}"/>
+
+        <!-- Save the current URL for redirect in ProcessMultipleCommand -->
+        <input type="hidden" name="bookmark" value="View/${handle}"/>
+
+      </form>
+          </div>
+
+      </div>
+
+      <insert ref="viewdef:dslib:footer"/>
+      <insert ref="viewdef:dslib:copyrightNoLine"/>
+      <insert ref="viewdef:javascript:dragDropFileUpload"/>
+
+      <div style="display:none">
+        <insert ref="local:addRequiredProps"/>
+        <div id="uploader_hidden" /> <!-- Plupload needs a default element for file dropping, but we only care about custom dropzones -->
+      </div>
+
+    </body>
+  </html>
+
+  <define id="addDropZonesByDocClass">
+    <!-- read-only users can not add objects -->
+    <if cond="not ${request:directory:is_user_level(level='minimum')}">
+    <!--
+      We configure two dropzones; one for immediate download of
+      Document class only with no popup window for selecting a different
+      class or changing property values.  The second dropzone allows
+      selecting a different class and editing properties.
+    -->
+    <ul class="dropzones" style="display:none">
+      <if cond="${request:object:canIAddDocument}">
+        <li class="dropzone immediateDrop" name="immediateDrop">
+          <div class="drag-over-catcher">
+          </div>
+          <i class="icon">
+          </i>
+          <span class="zonelabel"><insert ref="viewdef:ViewCollectionMessages:immediateDrop" /><br/><span style="color:gray"><insert ref="viewdef:ViewCollectionMessages:dragDropUploadLimit(limit=$request:config:getDragDropFileLimit)" /></span></span>
+              <input class="docClass" name="docClass" type="hidden" value="Document"/>
+        </li>
+      </if>
+
+      <if cond="${request:object:canIAddDocument} or ${request:object:canIAddDocumentClones}">
+        <li class="dropzone delayedDrop" name="delayedDrop">
+          <div class="drag-over-catcher">
+          </div>
+          <i class="icon">
+          </i>
+          <span class="zonelabel"><insert ref="viewdef:ViewCollectionMessages:delayedDrop" /><br/><span style="color:gray"><insert ref="viewdef:ViewCollectionMessages:dragDropUploadLimit(limit=$request:config:getDragDropFileLimit)" /></span></span>
+                <!-- The required properties are added dynamically from jquery when the dialog box is opened -->
+          <div id="dialog-form-delayedDrop" class="fieldset" title="${viewdef:ViewCollectionMessages:enterRequired}" style="display:none"></div>
+        </li>
+      </if>
+
+    </ul>
+    </if>
+  </define>
+
+  <define id="addRequiredProps" >
+
+    <script type="html/template" id="doctype-props-template">
+      <div>
+        <!-- only display class pulldown list if more than one class type exists -->
+        <div class="header-message-template notice notice_red" style="display:none" role="alert">
+          <i class="notice__icon icon-info"></i>
+          <p><insert ref='viewdef:dslibMessages:fluxRequiredFieldsMsg' /></p>
+        </div>
+        <if cond="${request:object:legal_document_class_count} > 1">
+          <div class="general-header-template multiple-actions-panel">
+            <h3>
+              <insert ref="viewdef:ViewCollectionMessages:changeFileType" />
+            </h3>
+            <div class="tabs-wrapper">
+              <select class="multiple-type-change-select">
+                <option name="${viewdef:dslibMessages:typeMenuLabel}" value="" selected="selected">
+                  <insert ref="viewdef:dslibMessages:typeMenuLabel"/>
+                </option>
+                <iter ref="request:object:legal_children">
+                  <if cond="${request:is_type_of( classname='$:name', base_class='Document' )}">
+                    <option name="${:name}" value="${:name}">
+                      <insert ref=":label"/>
+                    </option>
+                  </if>
+                </iter>
+              </select>
+            </div>
+          </div>
+
+        </if>
+      
+      <div id="doctype-props-template-wrapper" class="filecontainer file-item-template">
+      <div class="filecontainer-header">
+        <h3 class="fileinfo">&#173;</h3>
+        <!-- only display class pulldown list if more than one document class type exists-->
+        <div class="tabs-wrapper">
+          <select class="tabs" size="1">
+            <iter ref="request:object:legal_children">
+              <if cond="${request:is_type_of( classname='$:name', base_class='Document' )}">
+                <!--<if cond="${:is_selected}=='true'">-->
+                <if cond="${:name}=='Document'">
+                      <option name="${:name}" value="${:name}" selected="selected">
+                        <insert ref=":label"/>
+                      </option>
+                <else>
+                        <option name="${:name}" value="${:name}">
+                          <insert ref=":label"/>
+                        </option>
+                </else>
+                </if>
+              </if>
+            </iter>
+          </select>
+        </div>
+      </div>
+      <insert ref="request:init_counter" />
+      <iter ref="request:object:legal_children">
+        <if cond="${request:is_type_of( classname='$:name', base_class='Document' )}">
+          
+            <!--
+              Default class= Document as the default value shown.
+              After the initial display, jQuery does the show / hide
+              based on class selection.
+            -->
+            <if cond="${:name}=='Document'">
+              <form class="doctype-props form_${:name}" data-docclass="${:name}">
+                <input name="class" type="hidden" value="$:name"/>
+                <!-- <div class="doctype-props" id="props_${:name}" name="${:name}"> -->
+                  <ul class="doctype-props-required">
+                  <with ref="request:new_object(classname='$:name')">
+                    <iter ref=":props(required='true', defaultValueRequiredButEmpty='true', read_only='false')">
+                       <li><insert ref=":html_edit_value( formName='ApplyAddDocument')"/></li>
+                    </iter>
+                  </with>
+                </ul>
+                  <h4 class="__closed">
+                    <i class="icon">
+                    </i>
+                    <span>
+                      <insert ref="viewdef:ViewCollectionMessages:optionalProperties"/>
+                    </span>
+                  </h4>
+                  <div class="header-message-template notice notice_red" style="display:none" role="alert">
+                    <i class="notice__icon icon-info"></i>
+                    <p><insert ref='viewdef:dslibMessages:fluxRequiredFieldsMsg' /></p>
+                  </div>
+                  <ul class="doctype-props-optional" style="display:none">
+                    <with ref="request:new_object(classname='$:name')">
+                       <iter ref=":props(required='false', defaultValueRequiredButEmpty='false', read_only='false', exclude_props='add_as_draft+isPlaceholder+readyForDeclare+expiration_date+content_type+lastSynchronized')">
+                          <li><insert ref=":html_edit_value( formName='ApplyAddDocument' )"/></li>
+                       </iter>
+                    </with>
+                  </ul>
+                <!-- </div> -->
+              </form>
+            <else>
+
+              <!-- We must concern ourselves with the style='display:none'; when no Document class we need to show the first clone and hide the others -->
+              <if cond="not ${request:object:canIAddDocument} and ${request:counter} == 0">
+                <insert ref="request:increment" />
+                <form class="doctype-props form_${:name}" data-docclass="${:name}">
+                  <input name="class" type="hidden" value="$:name"/>
+                  <!-- <div class="doctype-props" id="props_${:name}" name="${:name}"> -->
+                    <ul class="doctype-props-required">
+                    <with ref="request:new_object(classname='$:name')">
+                      <iter ref=":props(required='true', defaultValueRequiredButEmpty='true', read_only='false', exclude_props='add_as_draft+isPlaceholder+readyForDeclare+expiration_date+content_type+lastSynchronized')">
+                        <li><insert ref=":html_edit_value( formName='ApplyAddDocument')"/></li>
+                      </iter>
+                    </with>
+                  </ul>
+                    <h4 class="__closed">
+                      <i class="icon">
+                      </i>
+                      <span>
+                        <insert ref="viewdef:ViewCollectionMessages:optionalProperties"/>
+                      </span>
+                    </h4>
+                      <div class="header-message-template notice notice_red" style="display:none" role="alert">
+                        <i class="notice__icon icon-info"></i>
+                        <p><insert ref='viewdef:dslibMessages:fluxRequiredFieldsMsg' /></p>
+                      </div>
+                      <ul class="doctype-props-optional" style="display:none">
+                      <with ref="request:new_object(classname='$:name')">
+                        <iter ref=":props(required='false', defaultValueRequiredButEmpty='false', read_only='false', exclude_props='add_as_draft+isPlaceholder+readyForDeclare+expiration_date+content_type+lastSynchronized')">
+                          <li><insert ref=":html_edit_value( formName='ApplyAddDocument' )"/></li>
+                        </iter>
+                      </with>
+                    </ul>
+                  <!-- </div> -->
+                </form>
+              <else>
+                <insert ref="request:increment" />
+                <form class="doctype-props form_${:name}" data-docclass="${:name}" style="display:none">
+                  <input name="class" type="hidden" value="$:name"/>
+                  <!-- <div class="doctype-props" id="props_${:name}" name="${:name}"> -->
+                    <ul class="doctype-props-required">
+                    <with ref="request:new_object(classname='$:name')">
+                      <iter ref=":props(required='true', defaultValueRequiredButEmpty='true', read_only='false', exclude_props='add_as_draft+isPlaceholder+readyForDeclare+expiration_date+content_type+lastSynchronized')">
+                        <li><insert ref=":html_edit_value( formName='ApplyAddDocument' )"/></li>
+                      </iter>
+                    </with>
+                  </ul>
+                    <h4 class="__closed">
+                      <i class="icon">
+                      </i>
+                      <span>
+                        <insert ref="viewdef:ViewCollectionMessages:optionalProperties"/>
+                      </span>
+                    </h4>
+                      <div class="header-message-template notice notice_red" style="display:none" role="alert">
+                        <i class="notice__icon icon-info"></i>
+                        <p><insert ref='viewdef:dslibMessages:fluxRequiredFieldsMsg' /></p>
+                      </div>
+                      <ul class="doctype-props-optional" style="display:none">
+                      <with ref="request:new_object(classname='$:name')">
+                        <iter ref=":props(required='false', defaultValueRequiredButEmpty='false', read_only='false', exclude_props='add_as_draft+isPlaceholder+readyForDeclare+expiration_date+content_type+lastSynchronized')">
+                          <li><insert ref=":html_edit_value( formName='ApplyAddDocument' )"/></li>
+                        </iter>
+                      </with>
+                    </ul>
+                  <!-- </div> -->
+                </form>
+              </else>
+              </if>
+            </else>
+            </if>
+    
+        </if>
+      </iter>
+    </div>
+      </div>
+    </script>
+  </define>
+
+  <define id="order_param"><insert ref="request:object:getSortOrderFromSession(appl='Paging'):order"/></define>
+  <define id="sort_param"><insert ref="request:object:getSortOrderFromSession(appl='Paging'):sort"/></define>
+
+  <!-- sort_link
+       Generates a hyperlink that sorts and orders a Collection column.
+       parameters:
+          sort - {String} Required. The sort value. Either it is one of the default options (TypeAndTitle, Title, Owner, Date, TypeAndSize) or it is a
+                 custom or class-specific property preceeded by the object class name. (i.e. Collection.handle).
+       usage:
+          ${local:sort_link(sort='somevalue')
+  -->
+  <define id="sort_link">
+    <!-- Determine if current property is already being sorted.
+         If it is, reverse the sort, if it isn't assign it to the default sort of "ascending" -->
+    <define id="newsortorder"><if cond="${local:sort_param} == ${sort}"><if cond="${local:order_param}=='ascending'">descending<else>ascending</else></if><else>ascending</else></if></define>
+    <insert ref="local:cgi"/>View/<insert ref="handle"/>?sort=<insert ref="sort"/>&amp;order=<insert ref="local:newsortorder"/>
+  </define>
+
+  <define id="order_arrow"><if cond="${local:sort_param} == ${sort}"><if cond="${local:order_param} == 'ascending'"><i class="icon icon-arrup">&nbsp;</i><else><i class="icon icon-arrdown">&nbsp;</i></else></if></if></define>
+
+  <define id="header">
+     <if cond="${caller}=='collection_speed'">
+        <if cond="${request:isLocalSite}=='true'">
+          <th class="nospace checkbox">
+            <if cond="${request:directory:is_logged_in_user}">
+              <if cond="${viewdef:dslib:runjs}=='Yes'">
+                 <input id="checkbox_select_all" class="checkbox" type="checkbox" name="selectcheckbox" value="selected" title="${viewdef:dslibMessages:selectCheckboxes}" onclick="if (this.checked==true) { SelectAll(true); this.checked = true; } else { SelectAll(false); this.checked = false; }" onmouseover="if (this.checked==true) { describe('${viewdef:dslibMessages:clickToUnselectAll}'); } else { describe('${viewdef:dslibMessages:clickToSelectAll}'); }; return true;" onmouseout="clearstatus();"/><label for="checkbox_select_all">&nbsp;</label>
+                <else>
+                 <img src="${request:config:abs_path}images/checkbox.gif" alt="${viewdef:dslibMessages:selectCheckboxes}" title="${viewdef:dslibMessages:selectCheckboxes}"/>
+                </else>
+              </if>
+              <else>
+                <insert ref="viewdef:dslib:nbsp"/>
+              </else>
+            </if>
+          </th>
+        </if>
+      <if cond="${caller}!='collection_image'">
+      <if cond="$request:preference_obj:isSelectedProps(appl='${prefAppl}',container='${handle}') ">
+       <iter ref="request:preference_obj:selectedProps(appl='${prefAppl}',container='${handle}')">
+        <define id="fullName"><insert ref=":classname" />.<insert ref=":name" /></define>
+        <if cond="${:classname}=='Object'">
+          <if cond="${:name}=='type'">
+            <th class="icon"><a href="${local:sort_link(sort='TypeAndTitle')}" title="${viewdef:dslibMessages:clickSortTypeTitle}"  target="${viewdef:dslib:window_target}"><insert ref="viewdef:dslibMessages:type" /> <insert ref="local:order_arrow(sort='TypeAndTitle')"/></a></th>
+          <elif cond="${:name}=='title'">
+            <th class="name"><a href="${local:sort_link(sort='title')}" title="${viewdef:dslibMessages:clickSortTitle}"  target="${viewdef:dslib:window_target}"><insert ref="request:propLabel(longPropName='Object.title')" /> <insert ref="local:order_arrow(sort='title')"/></a></th>
+          </elif>
+          <elif cond="${:name}=='owner'">
+            <th class="generic"><a href="${local:sort_link(sort='owner')}" title="${viewdef:dslibMessages:clickSortOwner}" target="${viewdef:dslib:window_target}"><insert ref="viewdef:dslibMessages:owner" /> <insert ref="local:order_arrow(sort='owner')"/></a></th>
+          </elif>
+          <elif cond="${:name}=='modified_date'">
+            <th class="generic"><a href="${local:sort_link(sort='date')}" title="${viewdef:dslibMessages:clickSortDate}"  target="${viewdef:dslib:window_target}"><insert ref="request:propLabel(longPropName='Object.modified_date')" /> <insert ref="local:order_arrow(sort='date')"/></a></th>
+          </elif>
+          <elif cond="${:name}=='size'">
+             <th class="generic"><a href="${local:sort_link(sort='TypeAndSize')}" title="${viewdef:ContentPortletMessages:clickToSortSize}" target="${viewdef:dslib:window_target}"><insert ref="viewdef:ContentPortletMessages:size" /> <insert ref="local:order_arrow(sort='TypeAndSize')"/></a></th>
+          </elif>
+          <elif cond="${:name}=='action'">
+             <th class="actions_th_nomore"><insert ref="viewdef:ContentPortletMessages:actions" /></th>
+          </elif>
+          <else>
+            <if cond="$request:preference_obj:isSortable(propName='${fullName}')">
+              <th class="generic"><a href="${local:sort_link(sort='${fullName}')}" title="${viewdef:dslibMessages:clickSortbyProp(propName=$:label)}"  target="${viewdef:dslib:window_target}"><insert ref=":label" /><insert ref="local:order_arrow(sort='${fullName}')"/></a></th>
+              <else>
+              <th class="generic"><insert ref=":label" /></th>
+              </else>
+            </if>
+          </else>
+          </if>
+        <else>
+            <if cond="$request:preference_obj:isSortable(propName='${fullName}')">
+              <if cond="${:classname}=='BulletinBoard'"> <!-- AR 31625 -->
+                <th class="generic"><a href="${local:sort_link(sort='${fullName}')}" title="${viewdef:dslibMessages:clickSortbyProp(propName=$:label)}"  target="${viewdef:dslib:window_target}">(<insert ref="viewdef:ViewDiscussionMessages:discussion" />)&nbsp;<insert ref=":label" /><insert ref="local:order_arrow(sort='${fullName}')"/></a></th>
+              <else>
+                <th class="generic"><a href="${local:sort_link(sort='${fullName}')}" title="${viewdef:dslibMessages:clickSortbyProp(propName=$:label)}"  target="${viewdef:dslib:window_target}">(<insert ref=":classlabel" />)&nbsp;<insert ref=":label" /><insert ref="local:order_arrow(sort='${fullName}')"/></a></th>
+              </else>
+              </if>
+            <else>
+              <if cond="${:classname}=='BulletinBoard'">
+                <th class="generic">(<insert ref="viewdef:ViewDiscussionMessages:discussion" />)&nbsp;<insert ref=":label" /></th>
+              <else>
+                <th class="generic">(<insert ref=":classlabel" />)&nbsp;<insert ref=":label" /></th>
+              </else>
+            </if>
+            </else>
+            </if>
+        </else>
+        </if>
+       </iter>
+        <if cond="$request:config:enable_security_icon"><th class="nospace">&nbsp;</th></if>
+    <else>
+        <th class="icon"><a href="${local:sort_link(sort='TypeAndTitle')}" title="${viewdef:ContentPortletMessages:clickToSort}" target="${viewdef:dslib:window_target}"><insert ref="viewdef:ContentPortletMessages:type" /> <insert ref="local:order_arrow(sort='TypeAndTitle')"/></a></th>
+        <th class="name"><a href="${local:sort_link(sort='Title')}" title="${viewdef:ContentPortletMessages:clickToSortTitle}" target="${viewdef:dslib:window_target}"><insert ref="request:propLabel(longPropName='Object.title')" /> <insert ref="local:order_arrow(sort='Title')"/></a></th>
+        <th class="generic"><a href="${local:sort_link(sort='Owner')}" title="${viewdef:ContentPortletMessages:clickToSortOwner}" target="${viewdef:dslib:window_target}"><insert ref="viewdef:ContentPortletMessages:owner" /> <insert ref="local:order_arrow(sort='Owner')"/></a></th>
+        <if cond="$request:config:enable_security_icon)"><th class="nospace"><insert ref="viewdef:dslib:nbsp"/></th></if>
+        <th class="generic"><a href="${local:sort_link(sort='Date')}" title="${viewdef:ContentPortletMessages:clickToSortDate}" target="${viewdef:dslib:window_target}"><insert ref="request:propLabel(longPropName='Object.modified_date')" /> <insert ref="local:order_arrow(sort='Date')"/></a></th>
+        <th class="generic"><a href="${local:sort_link(sort='TypeAndSize')}" title="${viewdef:ContentPortletMessages:clickToSortSize}" target="${viewdef:dslib:window_target}"><insert ref="viewdef:ContentPortletMessages:size" /> <insert ref="local:order_arrow(sort='TypeAndSize')"/></a></th>
+        <th class="actions_th_nomore"><insert ref="viewdef:ContentPortletMessages:actions" /></th>
+        <!--
+        Please Keep Custom property example (Collection.option): the following code displays a sortable new column.  The custom property exists on the Collection class only.
+        <th><a href="${local:sort_link(sort='Collection.option')" title="Click to sort by Option">Option <insert ref="local:order_arrow(sort='Collection.option')"/></a></th>
+        -->
+     </else>
+    </if>
+      </if>
+
+      </if>
+  </define>
+
+
+</viewdef>

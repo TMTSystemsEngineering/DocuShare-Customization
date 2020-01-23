@@ -30,3 +30,4 @@ tmt.logfilepath=/data/DocuShare/logs/tmt.log
 # logging level
 # 1=DEBUG, 2=INFO, 3=ERROR, 4=SEVERE
 tmt.loglevel=1
+

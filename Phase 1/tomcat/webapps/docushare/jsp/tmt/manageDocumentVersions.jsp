@@ -110,7 +110,8 @@ String pageTitle = "Document Versions Picklist Management";
 	}
 %>
 
-<link rel="stylesheet" href="http://www.caltech.edu/aux/main.css" type="text/css">
+<link rel="stylesheet" href="/docushare/docushare.css" type="text/css">
+<link rel="stylesheet" href="/docushare/jsp/tmt/tmt.css" type="text/css">
 
 <script language="Javascript">
 function addOption(oEditable, oCombo) {

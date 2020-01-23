@@ -375,16 +375,11 @@ and information now allowed by statutory or judicial law or herein after granted
       </if>
 
       <if cond="${request:new_object:display_sequence_enabled}">
+
         <iter ref="request:new_object:display_sequence(exclude_props='document+add_as_draft')" item="obj">		  
           <if cond="$:is_read_only=='false'">
             <if cond="${:name} == 'description'">
               <insert ref="request:new_object:description:html_edit_value(class='ckeditor')"/>
-	    <elif cond="${:name} == 'title'">
-		<tr><td align='right' valign='top'><label><a class='fieldname labelHelpLink' title="Help" href="/docushare/dsweb/PropHelp/Document.DCN">Pick a Document Number:</a></label></td>
-		  <td><select name='PickDCN'><insert ref="request:includeJSP(jsp='../tmt/myDCNs.jsp',my_var='my_value')"/></select></td>
-		</tr>
-                <insert ref=":html_edit_value(formName='ApplyAddDocument')"/>
-	    </elif>
               <else>	
                 <insert ref=":html_edit_value(formName='ApplyAddDocument')"/>
               </else>

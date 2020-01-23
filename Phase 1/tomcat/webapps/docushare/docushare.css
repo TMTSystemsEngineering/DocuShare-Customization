@@ -1,0 +1,607 @@
+/*
+ * DocuShare CSS - Blue Theme (Default)
+ * DocuShare's default theme featuring dark & light blue colors
+ * This file is the base CSS for DocuShare
+ * Copyright (c) 2002-2007 Xerox Corporation.  All Rights Reserved.
+ 
+ Table of Contents:
+ (NOTE: jump to section by doing a search with an equals sign '=' followed by the section number (i.e. '=25')
+ ------------------
+ 1. Site Global Styles
+ 2. Site Header Styles
+ 3. Page Heading Styles (Edit/Add/New Obj. Pages)
+ 4. Site Footer Styles
+ 5. Home Page Styles
+ 6. Portlet Page Styles (Personal Home Page & Workspace Home Page)
+ 7. Search Results Page Styles
+ 8. Bulletin Board Styles 
+ 9. Collection Styles
+ 	9a. Thumbnail Collection Styles
+	9b. Icon Collection Styles
+ 10. Calender Styles
+ 11. CHIBA Form Page Styles
+ 12. Property Page Styles
+ 13. Interact Styles
+ 14. About DocuShare Page Styles
+ 15. Routing Styles (deprecated?)
+ 16. Declare Record Section Styles
+ 17. Admin Section Styles
+ 18. Action Menu Styles
+ 
+ */
+
+/* --------------------- */
+/* =1. Site Global Styles */
+/* --------------------- */
+
+body{position:relative;font-size:80%;color:#333;font-family:Arial, Helvetica, sans-serif;margin:0;padding:0;min-width:760px;}
+h1 { font: 160% Lucinda Grande, "Trebuchet MS", Helvetica, sans-serif; color:#26385c; margin:0 0 4px 0; padding:0px;}
+h2 { font: 140% Lucinda Grande, "Trebuchet MS", Helvetica, sans-serif; color:#26385c; margin:0 0 4px 0; padding:0px;}
+h3 { font: 120% Lucinda Grande, "Trebuchet MS", Helvetica, sans-serif; color:#26385c; margin:0 0 4px 0; padding:0px;}
+h4 { font: Bold 110% Lucinda Grande, "Trebuchet MS", Helvetica, sans-serif; color:#26385c; margin:0 0 3px 0; padding:0px;}
+h5 { font: 110% Lucinda Grande, "Trebuchet MS", Helvetica, sans-serif; color:gray; margin:0 0 3px 0; padding:0px;}
+
+input, select, textarea, optgroup{font-size:100%;font-family:Arial, Helvetica, sans-serif;color:#333}
+select[multiple="multiple"]{min-width:35em;}
+.selectmultiple{_width:35em;}
+.selecttall{min-width:35em;_width:35em;}
+table{font-size:100%}
+
+fieldset{padding:0;margin:0;border:none; }
+form{display:inline;margin:0}
+legend {font-size:13px; font-weight:bold; color: #666666; margin-left:-5px; padding-bottom:8px;}
+
+hr{border:none;background-color:#e6e6e6;color:#e6e6e6;height:1px;}
+hr.hr {border:none; background-color:#B2b2b2; color:#B2b2b2; height:1px;}
+p{margin:0 0 .5em 0}
+p.note{font-size:85%}
+p.noteicon, span.noteicon{font-size:85%;padding:3px 19px;background:url(images/icon_note.png) no-repeat 0 50%}
+.titleicon{float:left;padding:5px 5px 0 3px;}
+
+a:link { color:#4C67BF; text-decoration:none;border-bottom:0}
+a:visited { color:#4C67BF; text-decoration:none;border-bottom:0}
+a:hover { color:#2891ff; text-decoration:none;border-bottom:0}
+a:active { color:#4C67BF; text-decoration:none;border-bottom:0}
+
+a.uline:link {color:#4C67BF; border-bottom:1px dotted #b2c2df;_border-bottom:1px solid #d2dfed; }
+a.uline:visited {color:purple; border-bottom:1px dotted purple;_border-bottom:1px solid #cfaad5; }
+a.uline:hover {color:#2891ff; border-bottom:1px dotted #2891ff;_border-bottom:1px solid #a9d3ff; }
+a.uline:active {color:#4C67BF; border-bottom:1px dotted #b2c2df;_border-bottom:1px solid #d2dfed;}
+
+a.morelink{font-weight:normal;font-size:85%;}
+
+/* adjacent selectors - CSS 2.1 compliant browsers only */
+h2+p {font:normal 95% Arial,Helvetica,sans-serif; color:#3a455c; text-decoration:none; margin:2px 2px}
+h2+p+hr,form+hr {border:none; background-color:#B2b2b2; color:#B2b2b2; height:1px;}
+ul{padding-bottom:2px; }
+/* Various other global styles */
+.disabledtextbox{background:#f9f9f9;border:1px solid #ccc;padding:3px;color:gray;}
+.linklabel{border:0px;margin-right:3px;vertical-align:middle}
+.noitemstext {font-style:italic;color:gray;height:30px;padding:3em 5em;}
+.noitemstextnopad {font-style:italic;color:gray;height:30px;}
+
+.summaryText {color:#808080; text-decoration:none;}
+.nocontent{font-style:italic;color:#808080;font-size:100%;text-align:center;padding:60px 30px}
+.graydot_dividerline{width:100%;background-color:#f2f0f0}
+.graydot_dark_dividerline{width:100%;background-color:#DAD3D2}
+.collectionListdividerline{width:100%;background-color:#f2f0f0;padding:0px;}
+.spacer{font-size : 1pt;}
+.noDisplay{display:none}
+.midalign{vertical-align:middle;border:0}/* style for aligning images */
+.basealign{vertical-align: baseline;}
+.whiteBG{ /* fix for ie PNG display bug */_background-color:#fff;}
+.clearfloats{clear:both;visibility:hidden;width:0;height:0;}
+.imglk{border:0;border-bottom:0;}
+.pageheader_dividerline{width:100%;background-color:#ebe1e1;margin-top:5px;margin-bottom:5px}
+#content{padding:0 35px 20px 35px;min-height:300px;_height:300px}
+.nobg{
+	background-color:transparent !important;
+	background-image:none !important;}
+.hidedisplay, .disabled{display:none;}
+
+/*-----------------------*/
+/* =2. Site header styles */
+/*-----------------------*/
+a.skipnav {position: absolute; left: -1000em; width:0;height:0;}
+.skipnav_header{position:absolute;width:0;padding:0;height:0;text-indent:-9999px;}
+
+#header_linksection li a:link{color:#B9C8D9;border-bottom:1px dotted #6683a3;_border-bottom:1px solid #426080}
+#header_linksection li a:visited{color:#B9C8D9;border-bottom:1px dotted #6683a3;_border-bottom:1px solid #426080}
+#header_linksection li a:hover{color:#c9daec;border-bottom:1px dotted #B9C8D9;_border-bottom:1px solid #6683a3}
+#header_linksection li a:active{color:#B9C8D9;border-bottom:1px dotted #c6d6e8;_border-bottom:1px solid #426080} 
+
+
+#header{	
+	background: #1B65B1 url(images/header_sitebkgnd.gif) repeat-x 0% 100%;
+	margin:0;
+}
+#header_inner{ 
+	margin:0 27px;
+	border-left:1px solid #598dc5;
+	border-right:1px solid #598dc5;
+	height:65px;	
+ }
+
+.scanpage_header_inner{padding: 0 0 25px 0;}
+
+#header h1{
+	position:absolute;
+	width:260px;
+	height:28px;
+	top:39px;
+	left:21px;
+	background:url(images/branding_docushare.gif) no-repeat 0% 0% ;
+	text-indent:-9999px;}
+	
+#header h1 a{display:block;width:260px;height:28px;border-bottom:0;}
+
+#header_linksection{
+	list-style: none;
+	margin:0 0 0 270px;
+	padding:45px 5px 5px 0;
+	text-align:right;}
+
+#header_linksection li{
+	margin: 0;
+	display:inline;
+	border-left:1px solid #476f9f;
+	padding: 2px 3px 2px 5px;}
+
+#header_linksection li.first{
+	margin: 0;
+	display:inline;
+	border-left:none;
+	padding: 0px 3px 0px 5px;
+	}
+
+#subheader{
+	background: #11375E url(images/grad_subheader.gif) repeat-x 0% 0%;
+	font-family:Verdana, Helvetica, Sans-Serif;
+	font-size:85%;}
+
+#subheader_inner{
+	margin:0 27px;
+	padding:5px 3px 8px 2px;
+	border-left:1px solid #598dc5;
+	border-right:1px solid #598dc5;
+	overflow:hidden; /* Float container hack for standards compliant browsers */
+	zoom:1; /* hasLayout hack for I.E.6 & 7 */
+	}
+	
+#subheader a:link{color:#B9C8D9;border-bottom:1px dotted #6683a3;_border-bottom:1px solid #426080}
+#subheader a:visited{color:#B9C8D9;border-bottom:1px dotted #6683a3;_border-bottom:1px solid #426080}
+#subheader a:hover{color:#c9daec;border-bottom:1px dotted #B9C8D9;_border-bottom:1px solid #6683a3}
+#subheader a:active{color:#B9C8D9;border-bottom:1px dotted #6683a3;_border-bottom:1px solid #426080}
+
+#subheader img{margin:0;vertical-align:middle}
+#subheader_account{float:left;margin:3px 2px;_margin:4px 2px 0px 2px;padding-bottom:1px;}
+#subheader_account #accountlinks .loginname a{color:#fff;border-bottom:1px dotted #B9C8D9;_border-bottom:1px solid #6683a3}
+#subheader_search{float:right;margin:0 5px;color:#fff;}
+#subheader_search .headersearchbox{border:1px solid #598dc5 }
+#subheader_search * {vertical-align:middle}
+#accountlinks{list-style: none;margin:0px;padding:0;display:inline;}
+#accountlinks li{
+	margin: 0;	
+	display:inline;
+	padding-left:3px;
+	border-left:1px solid #426181;
+}
+#accoutlinks li a{line-height: 1.5em;}
+#accountlinks li.loginname{padding-left:3px;border:0;font-weight:bold;}
+ 
+#search_windowshade{
+	background:#13365E;
+	border-top:1px dotted #598dc5;_border-top:1px solid #598dc5;
+	border-bottom:1px dotted #598dc5;_border-bottom:1px solid #598dc5;
+	font-size:85%;
+	padding-bottom:5px;}
+#search_windowshade{ color:#dde9ff}
+#search_windowshade a{ color:#fff}
+#search_windowshade div.column1{float:left;border-right:1px solid #3c4c6d;padding:5px 10px 5px 0;margin:5px 10px;}
+#search_windowshade div.column2{float:left;border-right:1px solid #3c4c6d;padding:5px 10px 5px 0;margin:5px 10px 5px 0;}
+#search_windowshade div.column3{float:left;padding:5px 10px 5px 0;margin:5px 10px 5px 0;}
+#search_windowshade div.buttonbar{clear:left;text-align:center;padding-top:5px;border-top:1px solid #3c4c6d;}
+#search_windowshade label{font-weight:bold;}
+#search_windowshade div span.labelwrapper{display:block;overflow:hidden} /*IE Mac display bug hack -- nested floated divs with labels displayed as a block elements expand to 100% width of container */
+#search_windowshade select{margin-bottom:6px;}
+
+#page_subheader{padding:10px 6px;}
+
+.headerlink_container{color:white;width:100%}
+.text_dvline{background: transparent url(images/pattern_vertdividerwhite.gif) repeat-y top; height:15px; width:3px;vertical-align: middle}
+.text_dvline_loginbar{background: transparent url(images/pattern_vertdividerblack.gif) repeat-y top; height:15px; width:3px;vertical-align: middle}
+
+/* Header message styles - info, admin, warning, error, confirm, etc. */
+.user_msg_warning, .user_msg_error, .user_msg_info{margin:8px 27px;text-align:center;font-weight: bold;color:black;}
+.user_msg_warning p, .user_msg_error p, .user_msg_info p{margin:0;padding:5px 5px 5px 20px}
+.user_msg_warning a, .user_msg_info a{color:#4C67BF; border-bottom:1px dotted #4C67BF;_border-bottom:1px solid #4C67BF; }
+.user_msg_warning a:hover, .user_msg_info a:hover{color:#2891ff; border-bottom:1px dotted #2891ff;_border-bottom:1px solid #a9d3ff;}
+.user_msg_error a{color:#fff; border-bottom:1px dotted #fff;_border-bottom:1px solid #fff; }
+.user_msg_error a:hover{color:#CCE6FF; border-bottom:1px dotted #CCE6FF;_border-bottom:1px solid #CCE6FF; }
+
+.user_msg_info {background:#bbfa7d url(images/bkgnd_usermsg_info_NW.gif) no-repeat top left;_height:1%;}
+	.user_msg_info .inner1{background:url(images/bkgnd_usermsg_info_NE.gif) no-repeat top right;}
+		.user_msg_info .inner2{background:url(images/bkgnd_usermsg_info_SW.gif) no-repeat bottom left;}
+			.user_msg_info .inner3{background:url(images/bkgnd_usermsg_info_SE.gif) no-repeat bottom right;}
+				.user_msg_info p{background:url(images/bkgnd_usermsg_info_icon.gif) no-repeat 5px 50% ;}
+				
+.user_msg_warning {background:#f7d44a url(images/bkgnd_usermsg_warning_NW.gif) no-repeat top left;_height:1%;}
+	.user_msg_warning .inner1{background:url(images/bkgnd_usermsg_warning_NE.gif) no-repeat top right;}
+		.user_msg_warning .inner2{background:url(images/bkgnd_usermsg_warning_SW.gif) no-repeat bottom left;}
+			.user_msg_warning .inner3{background:url(images/bkgnd_usermsg_warning_SE.gif) no-repeat bottom right;}
+				.user_msg_warning p{background:url(images/bkgnd_usermsg_warning_icon.gif) no-repeat 5px 50%;}
+				
+.user_msg_error {color:#fff;background:#aa2927 url(images/bkgnd_usermsg_error_NW.gif) no-repeat top left;_height:1%;}
+	.user_msg_error .inner1{background:url(images/bkgnd_usermsg_error_NE.gif) no-repeat top right;}
+		.user_msg_error .inner2{background:url(images/bkgnd_usermsg_error_SW.gif) no-repeat bottom left;}
+			.user_msg_error .inner3{background:url(images/bkgnd_usermsg_error_SE.gif) no-repeat bottom right;}
+				.user_msg_error p{background:url(images/bkgnd_usermsg_error_icon.gif) no-repeat 5px 50%;}
+
+.admin_msg_section{
+	margin:1px 0;
+	padding:0;
+	background:#DBE7FF url(images/pattern_adminmessage.gif) bottom left repeat-x;
+	}
+.admin_msg {
+	margin:0 27px;
+	padding:10px 0px 10px 27px;
+	border-left:1px solid #fff;
+	border-right:1px solid #fff;
+	background: url(images/icon_note.png) no-repeat 5px 10px;
+}
+
+	.user_msg_section p, .admin_msg_section p{margin:0;}
+
+/* Header background job message */
+#subheader_bkgndjobs{ 
+	background:#DBE7FF url(images/pattern_adminmessage.gif) bottom left repeat-x;
+	margin:1px 0;
+}
+#subheader_bkgndjobs p{
+	font-weight:bold;
+	padding:10px 6px 10px 30px;
+	margin:0 27px;
+	border-left:1px solid #fff;
+	border-right:1px solid #fff;
+	background:url(images/backgroundjob.png) no-repeat 5px 50%;
+	_background:url(images/bkjob_generic.gif) no-repeat 5px 50%;
+	_height:1px; /* prevents background job icon from dissappearing when rolled over... */
+}
+
+/* Space Subheader Styling */
+#space_navigator{
+	background:#ECB821;
+	padding:2px 5px;
+	font-size:95%;
+	font-family:Arial, Helvetica, Sans-serif;
+	white-space: nowrap;}
+	#space_navigator select, #space_navigator input{font-family:Arial, Helvetica, Sans-serif;	font-size:100%;vertical-align:middle;}
+	#space_navigator select{border:1px solid #fff;background:#FFE084;}
+	#space_navigator label{vertical-align:middle}	
+
+#bc_space{
+	width:100%;
+	padding:0;}
+	#bc_space table{padding-top:4px;}
+	#bc_space #space_navigator{
+		background:#ECB821 url(images/spacenav_bc_NW.gif) no-repeat top left;
+		float:right;
+		_width:1%;
+		margin:0;
+		padding:0;
+		font-size:100%;
+		font-family:Verdana, Helvetica, Sans-Serif}	
+	#bc_space #space_navigator select, #bc_space #space_navigator input{font-family:Verdana, Helvetica, Sans-serif;	font-size:100%;}
+	#bc_space #space_navigator #space_navigator_inner{background:url(images/spacenav_bc_NE.gif) no-repeat top right;}
+	#bc_space #space_navigator form{display:block;background:url(images/spacenav_bc_SW.gif) no-repeat bottom left;}
+	#bc_space #space_navigator fieldset{padding:3px 5px;background:url(images/spacenav_bc_SE.gif) no-repeat bottom right;border:none;}
+	#space_navigator fieldset select{width:220px;white-space:nowrap;}
+	#bc_space #space_navigator .sitehomelink{display:none}
+
+#space_subheader{
+	margin:1px 0;
+	background:#f2bd22 url(images/grad_subheader_space.gif) 0% 0% repeat-x;
+	border-bottom:1px solid #af9434;
+	clear:both;
+}
+#space_subheader_inner{
+	min-height:28px;_height:28px;
+	overflow:hidden;_overflow:none;
+	border-left:1px solid #f1d274;
+	border-right:1px solid #f1d274;
+	margin:0 27px -1px 27px;
+	padding:5px;
+	background: url(images/space_header_arrow.gif) 8px 100% no-repeat;
+}
+#space_subheader_inner h1{color:black;float:left;}
+	#space_subheader_inner #space_navigator{float:right;background:none;_width:1%;}
+
+#space_editlink{float:left;}
+
+
+/* ----------------------------------------------*/
+/* =3. Page heading styles for Add/Edit/New Pages */
+/* ----------------------------------------------*/
+.addtitle{margin-left:3px;}
+#subtitlefooter{
+	clear:both;
+	border-bottom:1px solid #D9E1EF;
+	padding:0;
+}
+#subtitlefooter_portalpage{
+	clear:both;
+	_padding-top:0;
+}
+#generic_title{
+	margin:0;
+	padding:10px 35px 0 35px;
+	min-height:60px;
+	_height:60px;
+	background:#fff url(images/grad_pageheader.gif) repeat-x top left;
+	
+}
+#generic_title_props{
+	margin:0;
+	padding:10px 35px 0 35px;
+	height:70px;
+	background:url(images/grad_pageheader.gif) repeat-x top left;
+	border-bottom:1px solid #D9E1EF;
+}
+
+#error_title{
+	margin:0;
+	padding:30px 35px 100px 35px;
+	background:url(images/grad_pageheader.gif) repeat-x top left;
+}
+
+#error_vdftitle{
+	margin:0;
+	padding:30px 35px 20px 35px;
+	background:url(images/grad_pageheader.gif) repeat-x top left;
+}
+
+#new_classification{
+	padding-bottom:20px;
+	margin-bottom:15px;
+   border-bottom:1px solid #D9E1EF;
+	background: url(images/ill_classification.gif) no-repeat right bottom;
+}
+#new_preset{
+	padding-bottom:20px;
+	margin-bottom:15px;
+   border-bottom:1px solid #D9E1EF;
+	background: url(images/ill_addpreset.gif) no-repeat right bottom;
+	
+}
+.edit_conflict_warning {color: red; font-weight: bold}
+
+
+/* Breadcrumb styles */
+.breadcrumbs{
+	_height:1%; /*I.E. Bug for position absolute elements in relative containers */
+	position:relative;
+	padding:5px 27px 5px 27px;
+	margin:0;
+	font-family:Verdana, Helvetica, San-serif;
+	font-size:85%;
+	background;}
+.breadcrumbs *{color:#666;}
+.breadcrumbs table td{vertical-align:top;}
+#bcExpand{
+	position:absolute;
+	bottom:0;margin-bottom:-9px;
+	border:1px solid #b9d3ff;
+	padding:1px 2px;
+	background:#fff;
+	z-index:100}
+#bcCollapse{
+	position:absolute;
+	bottom:0;margin-bottom:-9px;
+	border:1px solid #b9d3ff;
+	padding:1px 2px;
+	background:#fff;
+	z-index:100}
+
+	
+/* Generic page heading styles */
+#pageheader_wrapper{
+	background:#fff url(images/grad_pageheader.gif) repeat-x top left;
+	min-height:60px;
+	padding:10px 27px 0 27px;
+	overflow:hidden;
+	_height:60px; /*IE6.0 hack */
+	_overflow:visible; /*IE6.0 hack */}
+#pageheader{
+	margin:0;
+	padding:0 40px;}
+	.noclassicon{padding:0 40px 0 0 !important}
+#titleicon{float:left;padding-top:0}
+#notitleicon{
+	float:left;
+	height:50px;
+	padding-left:0}
+	
+#pageheader #description{float:left;margin:8px 0 0 3px;}
+#actions{
+	float:right;
+	padding:0 0 0 6px;
+	margin:0 10px 10px 0;}
+p.nosummary{margin-top:3px; }
+
+
+#federated_title{
+	padding-left:40px;
+	background: url(images/federated.png) no-repeat top left;
+	padding-bottom:10px;}
+
+#federated_contactinfo{
+	background:#F9FAFD;
+	padding:10px 10px;
+	margin:0 0 20px 40px;	
+	border-bottom:1px solid #f3f3f3;
+	border-top:1px solid #f3f3f3;}
+
+/* --------------------- */
+/* =4. Site Footer Styles */
+/* --------------------- */
+#siteFooter_line{
+	clear:both;
+	background:#B5CDF0 url(images/grad_footer.gif) repeat-x 0% 0%;
+	text-align:left;
+	padding:0;
+	overflow:hidden;
+	zoom:1; /* I.E. 6 & 7 Has-Layout Hack */}
+	
+#siteFooter_noline{
+	clear:both;
+	background:#B5CDF0 url(images/grad_footer.gif) repeat-x 0% 0%;
+	text-align:left;
+	padding:0;
+	overflow:hidden;
+	zoom:1; /* I.E. 6 & 7 Has-Layout Hack */}
+
+#footer_inner{ 
+	margin:0 27px;
+	padding: 0 0 0 15px;
+	border-left:1px solid #dee6f7;
+	border-right:1px solid #dee6f7;
+	overflow:hidden; /* Standard float containment */
+	zoom:1; /* I.E. 6 & 7 Has-Layout Hack */}
+	
+.footersitelinks{float:left;margin-left:40px;padding-bottom:10px;}
+.firstsection{margin-left:0;}
+.footersitelinks h2, #footer_history h2{font-size: 120%;color:white;background: url(images/footer_sectionarrow.gif) no-repeat 0 -1px;padding-top:10px;font-weight:bold}
+.footersitelinks ul, #footer_history ul{position:relative;list-style:none;margin:0;padding:0 0 2px 0;}
+.footersitelinks ul li, #footer_history ul li{font-family:Verdana, Helvetica, Sans-Serif;font-size:88%;margin:0;padding:1px 0;}
+.footerspacename{color:#3F5EBF;	background:#C1D6F1;padding:0 2px;margin:0 0 0 -2px}
+.footerspacename:hover{color:black;background:#E9B621;padding:0 2px;cursor:help;}
+#footer_inner a{line-height:100%; /*I.E hack for removing padding from anchor tags */}
+#footer_inner a:link {color:#4C67BF; border-bottom:1px dotted #85a0d6;_border-bottom:1px solid #9FB4D3;padding:0;margin:0 }
+#footer_inner a:visited {color:#4C67BF; border-bottom:1px dotted #85a0d6;_border-bottom:1px solid #9FB4D3;padding:0;margin:0 }
+#footer_inner a:hover {color:#2891ff; border-bottom:1px dotted #2891ff;_border-bottom:1px solid #74b1f7;padding:0;margin:0 }
+#footer_inner a:active {color:#4C67BF; border-bottom:1px dotted #85a0d6;_border-bottom:1px solid #9FB4D3;padding:0;margin:0}
+
+#footer_history{
+	margin:0;
+	float:right;
+	width:15em;
+	background:#C5D7F3 url(images/grad_footer_history.gif) 0% 0% repeat-x;
+	border-left:1px solid #e4ecfa;
+	padding:0 1em 1em 1em;
+	min-height:10.5em;
+	_height:10.5em;
+	}
+#footer_history ul li{
+	padding-bottom:2px;
+	padding-left:13px;
+	zoom:1; /* I.E. 6 & 7 Has-Layout Hack */ 
+	background:url(images/icon_history_footer.gif) no-repeat left .1em;}
+		#footer_history ul li a{line-height:1.2}
+#footer_history ul li:hover{
+	padding-left:13px;
+	zoom:1; /* I.E. 6 & 7 Has-Layout Hack */
+	background:url(images/icon_history_footer_over.gif) no-repeat left .1em;}
+
+#subfooter{
+	position:relative;
+	clear:both;
+	overflow:hidden;
+	padding:0 27px;
+	background:#eceaea;
+	border-top:1px solid #b1b1b1;
+	border-bottom:1px solid #f6f5f5;
+	}
+#subfooter_inner{
+	position:relative;
+	border-left:1px solid #f6f5f5;
+	border-right:1px solid #f6f5f5;
+	padding:0;
+	vertical-align:middle;
+	zoom:1}
+#subfooter .footerbranding{ /*using the Gilder/Levin Image replacement techinque */
+	position:relative;
+	float:right;
+	border-left:1px solid #f6f5f5;
+	width:17em;
+	height:50px;}
+#subfooter .footerbranding a{}
+
+#subfooter .footerbranding a span{
+	position:absolute;
+	background:#f0eeee url(images/logo.gif) no-repeat 50% 50% ;
+	z-index:100;
+	width:17em;
+	height:50px;
+	cursor: pointer;}
+	
+#subfooter .footerbranding a span:hover{background-color:#fafafa;}
+#copyright_text{
+	position:absolute;
+	top:0;left:0;
+	min-height:50px;
+	padding:15px 10px;
+	color:#777;
+	vertical-align:middle;}
+
+/* Federated Link Styles in footer */
+#fedbadge{
+	text-align:left;
+	float:right;
+	min-height:50px;
+	_height:50px;}
+
+a#fedbadgelink{
+	font-size:95%;
+	display:block;
+	margin:0;
+	color:#808080;
+	text-decoration:none;
+	min-height:35px;_height:35px;
+	width:12.5em;
+	padding:10px 1em 5px 4.5em;
+	background:#fafafa url(images/federated_gray.png) no-repeat 10px 50%;
+	border-left:1px solid #fff;
+	}
+	
+a#fedbadgelink:hover{
+	color:#666;
+	background:#fdfdfd url(images/federated.png) no-repeat 10px 50%;}
+
+#licensemessage{
+	padding:0 27px 0 20px;
+	background:#eceaea;}
+	
+#licensemessage_inner{
+	zoom:1;
+	padding:10px 0 40px 23px;
+	background:url(images/icon_warning2.png) no-repeat 0 8px;}
+	
+#licensemessage a:link {border-bottom:1px dotted #b2c2df;_border-bottom:1px solid #d2dfed; }
+#licensemessage a.underline:visited {border-bottom:1px dotted #b2c2df;_border-bottom:1px solid #d2dfed; }
+#licensemessage a.underline:hover {border-bottom:1px dotted #b2c2df;_border-bottom:1px solid #d2dfed; }
+#licensemessage a.underline:active {border-bottom:1px dotted #b2c2df;_border-bottom:1px solid #d2dfed;}
+
+ 
+
+/*---------------------*/
+/* =13. Interact styles */
+/*---------------------*/
+html body#interactpage #subheader #subheader_inner{padding-bottom:20px;_padding-bottom:5px}
+ #InteractContent{padding:10px 0;border-top:1px solid #E8EDF6 }
+ #InteractFooter{padding:10px 30px;border-top:1px solid #E8EDF6 }
+.interact_page_header {margin: 20px 0}
+.interact_page_title { font: 160% Lucinda Grande, "Trebuchet MS", Helvetica, sans-serif; color:#555; margin:0 0 6px 0; padding:0px;}
+.interact_page_description {color:#666666; text-decoration:none;}
+.interact_dialog_shadow {background-color:#D4D4D4;margin-bottom:15px;position:relative;}
+.interact_dialog {background-color:white;border:1px solid #A7A9AC;position:relative;top:-3px;left:-3px;margin: 5px 0 10px 0; padding: 10px 0 10px 0}
+.interact_dialog_edit_item {border: 1px solid #A7A9AC}
+.interact_dialog_template_title {margin: 10px 0 5px 0; font-size: 100%; font-weight: bold; background-color : #D9E1EF; text-align: center; padding: 3px 0 3px 0; }
+.interact_dialog_buttons {margin: 20px 0 20px 0; text-align: center}
+.interact_warning {color: red; font-weight: bold}
+.interact_dialog_table {border: none; width: 100%}
+.interact_field_lookup {float: right; margin-bottom: 5px}
+
+.interact_exception_message {}
+.interact_exception_footer {color:#808080; text-decoration:none;}
+
+

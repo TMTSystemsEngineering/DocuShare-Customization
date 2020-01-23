@@ -5,6 +5,9 @@ String pageTitle = "Add Document";
 %>
 <%@ include file="docushare_header.jsp" %>
 
+<script type="text/javascript">
+</script>
+
 <%!
 public String escapeSingleQuotes(String text)
 {
@@ -45,8 +48,8 @@ public String escapeSingleQuotes(String text)
 %>
 
 <%
-String dcn = null;
 String dcni = null;
+String DCN = "";
 String documentTitle = "";
 
 Vector errorVec = null;
@@ -111,10 +114,10 @@ finally
 {
 	try { if(con != null) com.waterware.db.DBServices.releaseConnection(con); } catch(Exception ex) {}
 }
+if (dcns != null && dcns.size() == 1) DCN = (String) (((Vector)(dcns.elementAt(0))).elementAt(2));
 %>
 
 <script type="text/javascript">
-
 var dcns = [<%
 		if(dcns != null && dcns.size() > 0)
 		for(int i=0; i<dcns.size(); i++)
@@ -124,24 +127,6 @@ var dcns = [<%
 			out.print("["+((Integer)vec.elementAt(0)).intValue()+", '"+(String)vec.elementAt(1)+"', '"+(String)vec.elementAt(2)+"', '"+(String)vec.elementAt(3)+"']");
         }
 %>];
-
-function update() {
-  	var val = <%= (dcni != null ? dcni : 0)%>;
-	if (document.ApplyAddDocument.dcnSelect != null) val = document.ApplyAddDocument.dcnSelect.value;
-	
-  	if(val > 0)
-  	{
-		for (i=0; i<dcns.length; i++) {
-			if(dcns[i][0] == val)
-			{
-				document.ApplyAddDocument.DCN.value = dcns[i][2];
-				document.ApplyAddDocument.documentTitle.value = removeEscapeCharacters(dcns[i][1]);
-				document.ApplyAddDocument.keywords.value = removeEscapeCharacters(dcns[i][3]);
-				break;
-			}
-		}
-	}
-}
 
 function removeEscapeCharacters(text)
 {
@@ -217,44 +202,13 @@ function showHide(id){
 	}
   }
 }
-
-function showSequenceSpan(pass) {
-  var spans = document.getElementsByTagName('span');
-  //alert("spans = " + spans.length);
-
-  //for select list use this.
-  //var val = document.ApplyAddDocument.doc_or_version.value;
-
-  //for radio buttons use this.
-  if(!document.ApplyAddDocument.doc_or_version)
-	return;
-
-  if(document.ApplyAddDocument.doc_or_version[0].checked == true)
-    val = 1;
-  else if(document.ApplyAddDocument.doc_or_version[1].checked == true)
-    val = 2;
-  //alert(val);
-
-  for (i=0; i<spans.length; i++) {
-    if (spans[i].id.indexOf(pass, 0) != -1) {
-        if (document.getElementById) {
-            if(val == 2){
-            //if (spans[i].style.display == "none"){
-                spans[i].style.display = "";
-            } else {
-                spans[i].style.display = "none";
-            }
-        }
-    }
-  }
-}
-
 </script>
+
 <A name="header"/>
 <blockquote>
 <span class="tmttitle">Add Document</span>
     
-	  <form name="ApplyAddDocument" method="POST" action="addDocument.jsp">
+<form name="ApplyAddDocument" method="POST" action="addDocument.jsp">
     <table class="dialogbody" border="0" cellpadding="3" cellspacing="0" width="100%">
 	<tbody>
 
@@ -282,7 +236,7 @@ if (dcni == null)
 		</td>
 		<td width="75%">
 	 	<span style="display: ;" id="pick_dcn">
-			<select name="dcnSelect" onChange="update();">
+			<select id="dcnSelect" name="dcnSelect" onChange="updateSelectedDCN(document.forms[0]);">
 				<option value="0">-Select-</option>
 				<%
 				if(dcns != null && dcns.size() > 0)
@@ -326,27 +280,27 @@ if (dcni == null)
 
    	<tr>
 	    <td align="right">
-	        <a href="javascript:openHelpTextWindow('/docushare/jsp/common/PropHelp.jsp?label=Title&help=The title of the object. The title should be short, but descriptive, and can contain spaces and punctuation marks.')" class="fieldname" target="_parent">Title:</a><br/><small>(required)</small>
+	        <a href="javascript:openHelpTextWindow('/docushare/jsp/common/PropHelp.jsp?label=Title&help=The title of the object. The title should be short, but descriptive, and can contain spaces and punctuation marks.&local=en')" class="fieldname" target="_parent">Title:</a><br/><small>(required)</small>
 		</td>
 
 		<td valign="top">
-	        <input type="text" name="documentTitle" size="60" value="<%=(request.getParameter("documentTitle") != null ? request.getParameter("documentTitle") : "")%>">
+	        <input type="text" name="documentTitle" size="60" value="<%=(request.getParameter("documentTitle") != null ? request.getParameter("documentTitle") : (dcni != null ? ((Vector)dcns.elementAt(0)).elementAt(1) : ""))%>">
 		</td>
 	</tr>
 
 	<tr>
 	    <td align="right">
-	        <a href="javascript:openHelpTextWindow('/docushare/jsp/common/PropHelp.jsp?label=Document Control Number&help=The document control number (DCN) of the document. This is the Document Number you created earlier. The document control number appears below the document's title.')" class="fieldname" target="_parent">Document&nbsp;Control&nbsp;Number:</a><br/><small>(required)</small>
+	        <a href="javascript:openHelpTextWindow('/docushare/jsp/common/PropHelp.jsp?label=Document Control Number&help=The document control number (DCN) of the document. This is the Document Number you created earlier. The document control number appears below the document\'s title.&local=en')" class="fieldname" target="_parent">Document&nbsp;Control&nbsp;Number:</a><br/><small>(required)</small>
 		</td>
 
 		<td valign="top">
-	        <input type="text" size=40 name="DCN" value="<%=dcn != null ? dcn : ""%>" />
+	        <input type="text" name="DCN" value="<%=DCN%>" <%=dcni != null ? "size='40'" : "size='40'"%> />
 		</td>
 	</tr>
 	
    	<tr>
 	    <td align="right">
-	        <a href="javascript:openHelpTextWindow('/docushare/jsp/common/PropHelp.jsp?label=Summary&help=The summary of the document. The summary appears below the document's control number and title.')" class="fieldname" target="_parent">Summary:</a>
+	        <a href="javascript:openHelpTextWindow('/docushare/jsp/common/PropHelp.jsp?label=Summary&help=The summary of the document. The summary appears below the document\'s control number and title.&local=en')" class="fieldname" target="_parent">Summary:</a>
 		</td>
 
 		<td>
@@ -356,7 +310,7 @@ if (dcni == null)
 
     <tr>
 		<td align="right">
-	        <a href="javascript:openHelpTextWindow('/docushare/jsp/common/PropHelp.jsp?label=Description&help=A detailed description of the object. You can include HTML tags in the object\'s description. For container objects, the description appears below the title.')" class="fieldname" target="_parent">Description:</a>
+	        <a href="javascript:openHelpTextWindow('/docushare/jsp/common/PropHelp.jsp?label=Description&help=A detailed description of the object. You can include HTML tags in the object\'s description. For container objects, the description appears below the title.&local=en')" class="fieldname" target="_parent">Description:</a>
 		</td>
 		<td>
 	        <textarea name='description' wrap='soft' rows='4' cols='60'><%=(request.getParameter("description") != null ? request.getParameter("description") : "")%></textarea>
@@ -365,27 +319,27 @@ if (dcni == null)
 
     <tr>
 		<td align="right">
-	        <a href="javascript:openHelpTextWindow('/docushare/jsp/common/PropHelp.jsp?label=Keywords&help=One or more words to associate with the object. Keywords help to categorize objects and can be used to find objects in a search. Separate keywords with a comma.')" class="fieldname" target="_parent">Keywords:</a>
+	        <a href="javascript:openHelpTextWindow('/docushare/jsp/common/PropHelp.jsp?label=Keywords&help=One or more words to associate with the object. Keywords help to categorize objects and can be used to find objects in a search. Separate keywords with a comma.&locale=en')" class="fieldname" target="_parent">Keywords:</a>
 		</td>
 
 		<td>
-	        <input name='keywords' type='text' size=60 maxlength=1024 value='<%=(request.getParameter("keywords") != null ? request.getParameter("keywords") : "")%>'/>
+	        <input name="keywords" type="text" size="60" maxlength="1024" value="<%=(request.getParameter("keywords") != null ? request.getParameter("keywords") : "")%>"/>
 		</td>
 	</tr>
 
     <tr>
 		<td align='right' valign='top'>
-	        <a href="javascript:openHelpTextWindow('/docushare/jsp/common/PropHelp.jsp?label=Expiration Date&help=The date on which the object is no longer needed. You can search for expired objects and delete or archive them.')" class="fieldname" target="_parent">Expiration Date:</a>
+	        <a href="javascript:openHelpTextWindow('/docushare/jsp/common/PropHelp.jsp?label=Expiration Date&help=The date on which the object is no longer needed. You can search for expired objects and delete or archive them.&locale=en')" class="fieldname" target="_parent">Expiration Date:</a>
 		</td>
 		<td>
-	        <input name='expiration_date' type='text' value='' tabindex='1' /><a href="javascript:show_calendar('ApplyAddDocument.expiration_date','MM/dd/yyyy','/docushare/')"><img src="/docushare/images/calendar.gif" border="0" ALT="Calendar Chooser" TITLE="Calendar Chooser"/></a>
-			<a href="javascript:openHelpTextWindow('/docushare/jsp/common/PropHelp.jsp?label=Date Format&help=Enter the date using one of these formats:<UL><LI>mm/dd/yyyy (for example, 12/6/2002)<LI>mm/dd/yy (for example, 12/6/02)<LI>mm/dd/yyyy hh:mm:ss am/pm (for example, 12/6/2002 2:01:00 pm)<LI>mm/dd/yyyy HH:mm:ss (a 24 hour clock example, 12/6/2002 14:01:00)</LI></UL>')" class="fieldvalue" target="_parent">mm/dd/yyyy</a>
+	        <input name='expiration_date' type='text' value='' tabindex='1' />
+		<a href="javascript:openHelpTextWindow('/docushare/jsp/common/PropHelp.jsp?label=Date Format&help=Enter the date using one of these formats:<UL><LI>mm/dd/yyyy (for example, 12/6/2002)<LI>mm/dd/yy (for example, 12/6/02)<LI>mm/dd/yyyy hh:mm:ss am/pm (for example, 12/6/2002 2:01:00 pm)<LI>mm/dd/yyyy HH:mm:ss (a 24 hour clock example, 12/6/2002 14:01:00)</LI></UL>&locale=en')" class="fieldvalue" target="_parent">mm/dd/yyyy</a>
 		</td>
 	</tr>
 
     <tr>
 		<td align='right' valign='top'>
-	        <a href="javascript:openHelpTextWindow('/docushare/jsp/common/PropHelp.jsp?label=Max Versions&help=The maximum number of versions to save. When a new version of a document is added to DocuShare, the oldest version is deleted.')" class="fieldname" target="_parent">Max Versions:</a><br/><small>(required)</small>
+	        <a href="javascript:openHelpTextWindow('/docushare/jsp/common/PropHelp.jsp?label=Max Versions&help=The maximum number of versions to save. When a new version of a document is added to DocuShare, the oldest version is deleted.&locale=en')" class="fieldname" target="_parent">Max Versions:</a><br/><small>(required)</small>
 		</td>
 		<td valign="top">
 			<input name='max_versions' type='text' size='10' value='100' tabindex='1' />
@@ -394,7 +348,7 @@ if (dcni == null)
 
     <tr>
 		<td align='right' valign='top'>
-			<a href="javascript:openHelpTextWindow('/docushare/jsp/common/PropHelp.jsp?label=Author&help=The document\'s author or authors. An author can be someone other than the document\'s owner.')" class="fieldname" target="_parent">Author:</a>
+			<a href="javascript:openHelpTextWindow('/docushare/jsp/common/PropHelp.jsp?label=Author&help=The document\'s author or authors. An author can be someone other than the document\'s owner.&locale=en')" class="fieldname" target="_parent">Author:</a>
 		</td>
 		<td>
 			<input name='author' type='text' size=60 maxlength=128 value='' tabindex='1' />
@@ -403,7 +357,7 @@ if (dcni == null)
 
 	<tr>
 		<td align="right">
-			<a href="javascript:openHelpTextWindow('/docushare/jsp/common/PropHelp.jsp?label=Keywords&help=This is the collection where the document will be uploaded.')" class="fieldname" target="_parent">Destination Collection:</a><br/><small>(required)</small>
+			<a href="javascript:openHelpTextWindow('/docushare/jsp/common/PropHelp.jsp?label=Keywords&help=This is the collection where the document will be uploaded.&locale=en')" class="fieldname" target="_parent">Destination Collection:</a><br/><small>(required)</small>
         </td>
 		<td>
 			<input type="text" size=20 name="destinationCollection" value="<%=(request.getParameter("destinationCollection") != null ? request.getParameter("destinationCollection") : "")%>" onfocus="blur();" />
@@ -469,15 +423,32 @@ if (dcni == null)
 };
 </script>
 <!-- END: Restrict uploading of .ZIP files -->
-	</form>
-	</blockquote>
-</body>
-</html>
-<%@ include file="/jsp/common/end.jsp" %>
 
 <script type="text/javascript">
-	//showAddDocumentSpanNew('add_document');
-	update();
+    function updateSelectedDCN(frm)
+    {
+	var val = <%= (dcni != null ? dcni : 0)%>;
+	if (frm.dcnSelect != null) val = frm.dcnSelect.value;
+	
+	if (val > 0)
+	{
+	    for (i=0; i<dcns.length; i++) {
+		if(dcns[i][0] == val) {
+		    frm.DCN.value = dcns[i][2];
+		    frm.documentTitle.value = removeEscapeCharacters(dcns[i][1]);
+		    frm.keywords.value = removeEscapeCharacters(dcns[i][3]);
+		    break;
+		}
+	    }
+	}
+    }
+
+</script>
+	</form>
+	</blockquote>
+<script type="text/javascript">
+    //showAddDocumentSpanNew('add_document');
+    updateSelectedDCN(document.forms[0]);
     var new_win = null;
     function popup(url)
     {
@@ -489,3 +460,6 @@ if (dcni == null)
 		new_win.moveTo(left, top);
     }
 </script>
+</body>
+</html>
+<%@ include file="/jsp/common/end.jsp" %>
