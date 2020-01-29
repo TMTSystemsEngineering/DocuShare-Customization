@@ -252,24 +252,24 @@
                 <if cond="${request:category}=='HomePage' and ${request:directory:is_user_level(level='imageManager')}">
                   <else>
 
-				<div>
-                    <input type="text" size="26" class="headersearchbox search__input" placeholder="${viewdef:dslibMessages:entireSite_ph}" name="value1"  />
-                    <if cond="${viewdef:dslib:runjs}=='Yes'">
-                       <span title="${viewdef:dslibMessages:clickToHideSearchOpt}" style="display: none;" id="searchOptionsHide" class="search__options is-active icon-settings" onclick="showSearchOptions('search_windowshade'); return(false);">
-                        
-                      </span>
-                      <span style="display: ;" id="searchOptionsShow" title="${viewdef:dslibMessages:clickToShowSearchOpt}" class="search__options icon-settings" onclick="showSearchOptions('search_windowshade'); return(false);">
-                        
-                      </span>
-                    </if>
-                    <input type="hidden" name="SimpleSearch" value="SimpleSearch" />
-                    <input hidden="hidden" type="submit" value="${viewdef:dslibMessages:search}" name="SearchButton" style="display:none" />
-                    <button name="SearchButton" class="search__submit" value="${viewdef:dslibMessages:search}"><i class="icon-search"><span/></i></button>
+		    <div>
+                      <input type="text" size="26" class="headersearchbox search__input" placeholder="${viewdef:dslibMessages:entireSite_ph}" name="value1"  />
+                      <if cond="${viewdef:dslib:runjs}=='Yes'">
+                         <span title="${viewdef:dslibMessages:clickToHideSearchOpt}" style="display: none;" id="searchOptionsHide" class="search__options is-active icon-settings" onclick="showSearchOptions('search_windowshade'); return(false);">
+                          
+                        </span>
+                        <span style="display: ;" id="searchOptionsShow" title="${viewdef:dslibMessages:clickToShowSearchOpt}" class="search__options icon-settings" onclick="showSearchOptions('search_windowshade'); return(false);">
+                          
+                        </span>
+                      </if>
+                        <input type="hidden" name="SimpleSearch" value="SimpleSearch" />
+                        <input hidden="hidden" type="submit" value="${viewdef:dslibMessages:search}" name="SearchButton" style="display:none" />
+                        <button name="SearchButton" class="search__submit" value="${viewdef:dslibMessages:search}"><i class="icon-search"><span/></i></button>
 		        <!-- Begin TMT Collection Search -->
 		        <input id="TMT_find_collection" type="text" size="20" class="TMT_find_collection" placeholder="${viewdef:TMTMessages:FindCollection_ph}" name="TMT_find_collection" />
 		        <button name="TMT_find_collection_button" id="TMT_find_collection_button" class="TMT_find_collection_button" value="TMT_find_collection_button" onclick="redirect(this);"><i class="icon-search" onclick="redirect(this);"><span onclick="redirect(this);"/></i></button>
 		        <!-- End TMT Collection Search -->
-				</div>
+		    </div>
 
                     <if cond="${request:handle}!='None' and ${request:handle}!='null' and ${request:handle}!='Site' and ${request:handle}!='SearchResults' and ${request:object:is_container}">
                       <!-- begin search insideof -->
@@ -1702,9 +1702,6 @@
       </tr>
     </table>
     <input type="hidden" id="prefPropsStr" name="prefPropsStr" value=""/>
-    <if cond="${container_key}!='Site'"> <!-- AR39056 -->
-      <input type="hidden" id="prefPropsMaxLength" name="prefPropsMaxLength" value="$request:preference_obj:getMaxLength(appl='${pref_appl}', container='${container_key}')"/>
-    </if>
       </div>
     </div>
 
@@ -2545,24 +2542,9 @@
             <define id="u3"><a target="${local:url_targettype}" href="$request:html:escape_cdata(astring=${t})"><b property="dc:title"><insert ref="object:getTitle"/></b></a></define>
             <insert ref="request:xss_safe_value(value=$u3)" />
 
-      <define id="splitscreen_onclick_script">
-      <if cond="${request:is_licensed(key='document_viewer')}">
-        window.open('<insert ref="local:cgi"/>ImageStoreViewer/<insert ref="object:handle"/>','documentviewer_win','width=1024,height=650,left=400,top=0,resizable=yes,scrollbars=yes')
-        <else>
-        window.open('<insert ref="local:cgi"/>ImageStoreViewer/<insert ref="object:handle"/>','mywindow','width=1200,height=650,left=400,top=0,resizable=yes,scrollbars=yes')
-        </else>
-      </if>
-      </define>
-      
-          <elif cond="not ${object:handleIsRemote} and not ${object:isFromExternalServer} and ${object:is_type_of(classname='Document')} and ${request:is_licensed(key='document_viewer')} and not ${object:is_interact}">
-        <define id="u4"><insert ref="object:getTitle"/></define>
-        <a href="$request:html:url_escape(astring=${t})" >
-        <strong property="dc:title"><insert ref="request:xss_safe_value(value=$u4)" /></strong>
-        </a>&nbsp;&nbsp;
-        <a href="$request:html:url_escape(astring=${t})" onclick="${local:splitscreen_onclick_script};return false;" title="${viewdef:dslibMessages:fcr_openwindowhovertext}">
-        <i class="icon icon-newwindow"><insert ref="viewdef:dslib:nbsp"/></i>
-        </a>
-      </elif>
+            <define id="splitscreen_onclick_script">
+              window.open('<insert ref="local:cgi"/>ImageStoreViewer/<insert ref="object:handle"/>','mywindow','width=1200,height=650,left=400,top=0,resizable=yes,scrollbars=yes')
+            </define>
 
           <elif cond="not ${object:handleIsRemote} and not ${object:isFromExternalServer} and ${object:is_type_of(classname='Document')} and ${request:is_licensed(key='file_cabinet_replacement')} and not ${object:is_interact}">
             <!-- if FCR Site and a document or custom document class object... -->
@@ -2659,10 +2641,10 @@
       <if cond="$object:is_new">
         <span class="new-item" title="${viewdef:dslibMessages:new}"><insert ref="viewdef:dslibMessages:new"/></span>
       </if>
-<!-- Begin RKent modification 2018-09-07 -->
+<!-- Begin RKent modification 2020-01-24 -->
       <if cond="not ${object:is_type_of( classname='Bulletin' )}">
         <if cond="${object:summary:gets}!=''">
-            <if cond="${object:is_type_of( classname='Document' )} and ${object:DCN:gets}!=''">
+            <if cond="not ${object:canSearchOnly} and ${object:is_type_of( classname='Document' )} and ${object:DCN:gets}!=''">
 		<p property="dc:description">
                     <insert ref="request:xss_safe_value(value=$object:DCN)" /><br/>
 		    <insert ref="request:xss_safe_value(value=$object:summary)"/>
@@ -2674,14 +2656,14 @@
 		</else>
             </if>
 	    <else>
-                <if cond="${object:is_type_of( classname='Document' )} and ${object:DCN:gets}!=''">
+                <if cond="not ${object:canSearchOnly} and ${object:is_type_of( classname='Document' )} and ${object:DCN:gets}!=''">
 		    <p property="dc:description">
 			<insert ref="request:xss_safe_value(value=$object:DCN)" />
 		    </p>
 		</if>
 	    </else>
         </if>
-<!-- End RKent modification 2018-09-07 -->
+<!-- End RKent modification 2020-01-24 -->
         <else>
           <if cond="${object:get_description}!=''">
               <p property="dc:description">
@@ -3178,12 +3160,11 @@
         </form>
       </div>
   </define>
-  
-    <define id="modified_handle"><if cond="${request:handle}=='None'"><insert ref="handle"/><else><insert ref="request:handle"/></else></if></define>
+
     <define id="parentage">
-    <if cond="${request:initBreadcrumbs(handle=${modified_handle}, label=${label}, current=${current})}!='error'">
+    <if cond="${request:initBreadcrumbs(handle=${request:handle}, label=${label}, current=${current})}!='error'">
       <table class="breadcrumbs__list">
-        <insert ref="request:getPreferredBreadcrumbPath(handle=${modified_handle}, label=${label}, current=${current})"/>
+        <insert ref="request:getPreferredBreadcrumbPath(handle=${request:handle}, label=${label}, current=${current})"/>
       </table>
       <if cond="${viewdef:dslib:runjs}=='Yes'">
         <if cond="not ${request:isBreadcrumbListEmpty}">
@@ -3191,14 +3172,15 @@
           <div class="breadcrumbs__toggle is-active" id="bcCollapse" style="display:none"  title="${viewdef:dslibMessages:hideAltBreadcrumbs}" onclick="showHideBC(this.id); return(false);"><i class="icon-arrdown">&nbsp;</i></div>
           <div style="display: none;" id="bcAdditional" class="breadcrumbs__more">
             <table class="breadcrumbs__list">
-              <insert ref="request:breadcrumbs(handle=${modified_handle}, label=${label}, current=${current})"/>
+              <insert ref="request:breadcrumbs(handle=${request:handle}, label=${label}, current=${current})"/>
             </table>
           </div>
         </if>
         <else>
           <table class="breadcrumbs__list">
-            <insert ref="request:breadcrumbs(handle=${modified_handle}, label=${label}, current=${current})"/>
+            <insert ref="request:breadcrumbs(handle=${request:handle}, label=${label}, current=${current})"/>
           </table>
+
         </else>
       </if>
     </if>
