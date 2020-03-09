@@ -15,18 +15,15 @@ if OLD.handle_class = 2 then
     end if;
 
     if OLD.document_dcn != NEW.document_dcn then
-        -- Change of the final component ("DRF01", "REL02", etc.) is allowed, but otherwise change is not allowed
-        if split_part(OLD.document_dcn, '.', 1) != split_part(NEW.document_dcn, '.', 1)
-        or split_part(OLD.document_dcn, '.', 2) != split_part(NEW.document_dcn, '.', 2)
-        or split_part(OLD.document_dcn, '.', 3) != split_part(NEW.document_dcn, '.', 3)
-        or split_part(OLD.document_dcn, '.', 4) != split_part(NEW.document_dcn, '.', 4)
-        or split_part(OLD.document_dcn, '.', 5) != split_part(NEW.document_dcn, '.', 5) then
-	    NEW.document_dcn := OLD.document_dcn;
+        -- unlink old DCN from this document
+		update tmt_dcn_issued set date_uploaded = NULL, ds_doc_handle = NULL where dcn = OLD.document_dcn;
+		-- link new DCN to this document
+		update tmt_dcn_issued set date_uploaded = NEW.object_create_date, ds_doc_handle = 'Document-' || NEW.handle_index where dcn = NEW.document_dcn;
 	end if;
-    end if;
 end if;
 return NEW;
 end;
+$BODY$;
 
 ALTER FUNCTION public.tmt_dsobject_update()
     OWNER TO docushare_admin;
