@@ -1,3 +1,9 @@
+CREATE FUNCTION public.tmt_dsobject_update()
+    RETURNS trigger
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE NOT LEAKPROOF
+AS $BODY$
 begin
 if OLD.handle_class = 2 then
     if OLD.object_isdeleted = 0 and NEW.object_isdeleted = 1 then
@@ -21,3 +27,6 @@ if OLD.handle_class = 2 then
 end if;
 return NEW;
 end;
+
+ALTER FUNCTION public.tmt_dsobject_update()
+    OWNER TO docushare_admin;
