@@ -387,6 +387,7 @@ and information now allowed by statutory or judicial law or herein after granted
 		    <elif cond="${prop:name} == 'DCN'">
                       <insert ref="prop:html_edit_value(formName='ApplyProps')"/>
 		      <input name="origDCN" type="hidden" value="${prop:gets}"></input>
+			  <if cond="not ${request:directory:is_admin(content_admin='true')}">
 		      <script type="text/javascript">
 		      function DCNchange(){
 			  var fldDCN = document.getElementsByName("DCN")[0];
@@ -402,6 +403,7 @@ and information now allowed by statutory or judicial law or herein after granted
 		      var fldDCN = document.getElementsByName("DCN")[0];
 		      fldDCN.onchange = DCNchange;
 		      </script>
+			  </if>
 			<!--
 			<tr><td align='right' valign='top'><label><a class='fieldname labelHelpLink' title="Help" href="/docushare/dsweb/PropHelp/Document.DCN">Document Control Number:</a></label><br/><small>(required)</small></td>
 			<td><input name="DCN" type="text" size="60" required="required" maxlength="80" value="${prop:gets}" tabindex="1"></input>
